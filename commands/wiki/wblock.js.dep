@@ -1,0 +1,25 @@
+const commando = require( 'discord.js-commando' );
+const wikiArticlePath = 'https://lotro-wiki.com/index.php/';
+const wikiOfficialGuild = '203325138601508866';
+const wikiAdminRole = 'an <@&205155853555204096>';
+
+class WikiBlockCommand extends commando.Command {
+  constructor( client ) {
+    super( client, {
+      name: 'wblock',
+      group: 'wiki',
+      memberName: 'wblock',
+      description: 'Takes you to the page to block the specified user.'
+    } );
+  }
+  
+  async run( message, args ) {
+    var blocker = 'someone';
+    if ( message.guild.id === wikiOfficialGuild ) {
+      blocker = wikiAdminRole;
+    }
+    message.channel.send( message.author + ' has requested ' + blocker + ' block **' + args + '** at <' + wikiArticlePath + 'Special:Block/' + args + '>' );
+  }  
+}
+
+module.exports = WikiBlockCommand;

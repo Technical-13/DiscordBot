@@ -1,0 +1,155 @@
+const Discord = require( 'discord.js' );
+const commando = require( 'discord.js-commando' );
+const path = require( 'path' );
+const request = require( 'request' );
+const settings = require( path.join( __dirname, '../../../settings.json' ) );
+const timeString = {
+  year: 'numeric', month: 'long', day: 'numeric',
+  hour: 'numeric', minute: 'numeric', second: 'numeric',
+  timeZone: 'America/New_York', timeZoneName: 'short' };
+const bot = 'LOTRObot';
+const wikiApiPath = 'https://lotro-wiki.com/api.php';
+
+function remove( msgCollect, msgBot, objRemoveOptions ) {
+  var boolOnly = false,
+  intDelay = 5000,
+  strDelConfirmed = '`[redacted]`',
+  useReaction = '%F0%9F%97%91';
+  if ( objRemoveOptions ) {
+    if ( objRemoveOptions.boolOnly ) { boolOnly = objRemoveOptions.boolOnly; }
+    if ( objRemoveOptions.intDelay ) { intDelay = objRemoveOptions.intDelay; }
+    if ( objRemoveOptions.strDelConfirmed ) { strDelConfirmed = objRemoveOptions.strDelConfirmed; }
+    if ( objRemoveOptions.useReaction ) { 
+      let rxp = /<:(.*)?:([\d]*)>/;
+      if ( rxp.test( objRemoveOptions.useReaction ) ) {
+        useReaction = objRemoveOptions.useReaction.match( rxp )[ 2 ]; }
+      else { useReaction = encodeURI( objRemoveOptions.useReaction ); }
+    }
+  }
+  msgBot.react( useReaction );
+  var reactedFilter = '';
+  if ( boolOnly = true ) {
+    reactedFilter = ( reaction, user ) => reaction.emoji.name === 'ðŸ—‘' && user.id === msgCollect.author.id;
+  } else {
+    reactedFilter = ( reaction, user ) => reaction.emoji.name === 'ðŸ—‘' && !user.bot;
+  }
+  const reacted = msgBot.createReactionCollector( reactedFilter );
+  reacted.on( 'collect', r => {
+    msgBot.delete().catch( errDel => { console.error( ( new Date() ).toLocaleDateString( 'en-US', timeString ) + ': Failed to delete bot message: ' + errDel ); } );
+    msgBot.channel.send( strDelConfirmed )
+      .then( message => {
+        message.delete( intDelay ).catch( errDelRedacted => { console.error( ( new Date() ).toLocaleDateString( 'en-US', timeString ) + ': Failed to delete `[redacted]` message: ' + errDelRedacted ); } );
+      } ).catch( errSendRedacted => { console.error( ( new Date() ).toLocaleDateString( 'en-US', timeString ) + ': Failed to send `[redacted]` message: ' + errSendRedacted ); } );
+  } );
+}
+
+class SyncMe extends commando.Command {
+  constructor( client ) {
+    super( client, {
+      name: 'wsyncme',
+      group: 'wiki',
+      memberName: 'wsyncme',
+      description: 'Update your Dicord nickname and set your roles based on your wiki username. -- This command **ONLY** works in the **LotRO-wiki** guild.'
+    } );
+  }
+
+  async run( message, args ) {
+		if ( /*/message.guild.id !== '203325138601508866' && /* DEBUG --> */message.guild.id !== '192775085420052489' ) {
+			message.reply( 'I\'m sorry, this command only works in the **LotRO-wiki** guild. - You can join: <https://discord.me/LotRO-wiki>' );
+		} else {
+			var msgWait = await message.channel.send( 'Collecting data for your query, please stand by...' );
+      const strArgs = args.replace( ' ', '_' );
+      var strArgsUpperCaseFirst = ( strArgs.charAt( 0 ).toUpperCase() + strArgs.slice( 1 ) || 'User_name' );
+      var msgEmbed = new Discord.RichEmbed()
+        .setTimestamp()
+        .setFooter( '... as requested by ' + message.author.tag + '.'/*, 'https://LOTRO-wiki.com/images/Blue_d20.png'*/ );
+      var query = wikiApiPath + '?action=query&format=json&list=allusers&auprop=blockinfo|groups|editcount|registration&aulimit=max&auprefix=' + strArgsUpperCaseFirst;
+      
+      request( query, function ( error, response, body ) {
+//console.log( '\nWe queried LOTRO-wiki\'s API with:\n\t`' + query + '`' );
+//console.log( '\nThe json string returned by the wiki\'s API was:\n\t`' + body + '`' );
+        if ( error !== null ) {
+          console.log( 'error:', error ); // Print the error if one occurred        
+        } else if ( response.statusCode !== 200 ) {
+          console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received        
+        } else {
+          var allUsers = JSON.parse( body ).query.allusers;
+          var numberOfUsers = allUsers.length;
+          if ( numberOfUsers === 1 || ( numberOfUsers > 1 && allUsers[ 0 ].name === ( args[ 0 ].toUpperCase() + args.slice( 1 ) ) ) ) {
+            var userInfo = allUsers[ 0 ];
+            userInfo.nameURL = userInfo.name.replace( ' ', '_' );
+            userInfo.userPageURL = 'https://LOTRO-wiki.com/index.php/User:' + userInfo.nameURL;
+            msgEmbed
+              .setTitle( 'User information for: ' + userInfo.name )
+              .setDescription( userInfo.userPageURL )
+  //            .setThumbnail( 'https://LOTRO-wiki.com/images/Black_d20.png' )
+              .setColor( '#542857' )
+              .addField( 'Creation:', 'Created ' + ( userInfo.registration ? 'on ' + ( new Date( userInfo.registration ) ).toLocaleDateString( 'en-US', { year: 'numeric', month: 'long', day: 'numeric' } ) + ' at ' + ( new Date( userInfo.registration ) ).toLocaleTimeString( 'en-US', { hour: 'numeric', minute: 'numeric', hour12: false } ) : 'before April 12, 2006' ) + ' [(log)](https://LOTRO-wiki.com/index.php?title=Special:Log&type=newusers&page=User:' + userInfo.nameURL + ')' )
+              .addField( 'Edits:', userInfo.editcount.toLocaleString( 'en-US' ) + ' according to [Special:Contributions/' + userInfo.name + '](https://LOTRO-wiki.com/index.php/Special:Contributions/' + userInfo.nameURL + ')' );
+            userInfo.groups.forEach( function( group, i ) {
+              if ( group !== 'autoconfirmed' ) {
+                if ( group === 'sysop' ) {
+                  group = 'administrator';
+                }
+                var Group = group[ 0 ].toUpperCase() + group.slice( 1 );
+                var groupID;
+                try {
+                  groupID = message.guild.roles.find( 'name', group ).id;
+                } catch ( error ) {
+                  msgWait.edit( msgWait.message + '\n\nI got an error trying to find the group ID for "' + group + '": ' + error );
+                }
+                userInfo.groups[ i ] = { Group: groupID };
+              }
+            } );
+            if ( userInfo.groups.length > 0 ) {
+              msgEmbed
+                .addField( 'User groups:', '<:one_ring:248607443041386497> ' + userInfo.groups.sort().join( ', ' ) );
+            }
+            if ( userInfo.blockid ) {// If user is blocked
+              var parsedReason = userInfo.blockreason;
+              var brLinks = userInfo.blockreason.match( /\[\[(.*?\|?.*?)\]\]/i );
+              if ( brLinks ) {
+                brLinks = brLinks.slice( 1 );
+                brLinks.forEach( function( wikiLink, index ){
+                  if ( wikiLink.indexOf( '|' ) === -1 ) {
+                    parsedReason = parsedReason.replace( '[[' + wikiLink + ']]' , '[' + wikiLink + '](https://LOTRO-wiki.com/index.php/' + wikiLink + ')' );
+                  } else {
+                    parsedReason = parsedReason.replace( '[[' + wikiLink + ']]' , '[' + wikiLink.substring( wikiLink.indexOf( '|' ) + 1 ) + '](https://LOTRO-wiki.com/index.php/' + wikiLink.substring( 0, wikiLink.indexOf( '|' ) ) + ')' );
+                  }
+                } );
+              }
+              var blockDate = '';
+              if ( userInfo.blockexpiry === 'infinity' ) {
+                blockDate = 'an unblock request is granted';
+              } else {
+                var arrDate = userInfo.blockexpiry.match( /([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/ ).slice( 1 );
+                blockDate = ( new Date( arrDate[ 0 ], ( arrDate[ 1 ] - 1 ), arrDate[ 2 ], ( arrDate[ 3 ] - ( ( new Date() ).getTimezoneOffset() / 60 ) ), arrDate[ 4 ], arrDate[ 5 ] ) )
+                  .toLocaleDateString( 'en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', timezone: 'America/New_York' } );
+              }
+              msgEmbed
+                .setColor( '#D00000' )
+                .addField( 'BLOCKED:', '[' + userInfo.blockedby + '](https://LOTRO-wiki.com/index.php/' + userInfo.blockedby.replace( ' ', '_' ) + ') blocked this user until ' + blockDate + ' with reason: **' + ( !userInfo.blockreason ? '_none specified_' : parsedReason ) + '**' );
+            }// End blocked user section
+            msgWait.edit( allUsers[ 0 ].name + ', I\'ve found your wiki account!  Setting your nickname and matching your roles here now.', { embed: msgEmbed } );
+            message.guild.members.get( message.author.id ).setNickname( allUsers[ 0 ].name, 'Syncing nickname to wiki username as indicated by user.' );
+            if ( userInfo.blockid ) {
+              message.guild.members.get( message.author.id )
+                .addRole( '205156032408846336', 'Syncing wiki block status per username as indicated by user.' )
+                .catch( function( error ) {
+                  console.log( 'Unable to mark ' + message.author + ' as <@&205156032408846336>: ' + error );
+                } );
+            }/*
+            userInfo.groups.forEach( function( group ){
+              
+            } );/**/
+          } else {
+            msgWait.edit( 'I\'m sorry, but there are no users on LotRO-wiki with a name of "' + args + '".  Please note that usernames are case sensitive just like on wiki and try again.' );
+          }
+        }
+      } );
+      remove( message, msgWait );
+    }
+  }
+}
+
+module.exports = SyncMe;

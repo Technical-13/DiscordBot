@@ -1,0 +1,68 @@
+const Discord = require( 'discord.js' );
+const commando = require( 'discord.js-commando' );
+const path = require( 'path' );
+const objEvents = require( path.join( __dirname, '../events.json' ) );
+const objTimeString = {
+  year: 'numeric', month: 'long', day: 'numeric',
+  hour: 'numeric', minute: 'numeric', second: 'numeric',
+  timeZone: 'America/New_York', timeZoneName: 'short' };
+
+class support extends commando.Command {
+  constructor( client ) {
+    super( client, {
+      name: 'support',
+      group: 'lotro',
+      memberName: 'support',
+      description: 'Links to contact SSG LotRO support.'
+    } );
+  }
+
+  run( message, strArgs ) {
+    var arrArgs = strArgs.split( ' ' );
+		var strCommand = ( arrArgs[ 0 ] || 'NULL' ).toUpperCase();
+    var objSupportEmbed = new Discord.richEmbed()
+      .thumbnail( 'https://help.standingstonegames.com/hc/theme_assets/1376679/115000025568/ssg-logo.png' )
+      .footer( 'Standing Stone Games support options' )
+    var intFormID = -1;
+    switch ( strCommand ) {
+      case 'ACCOUNT' :
+        intFormID = 437927;
+        break;
+      case 'MARKET' :
+      case 'STORE' :
+        intFormID = 437947;
+        break;        
+      case 'FORUMS' :
+        intFormID = 437987;
+        break;
+      case 'BUG' :
+      case 'REPORT' :
+        intFormID = 438007;
+        break;
+      case 'CHARACTER' :
+      case 'QUEST' :
+      case 'ITEM' :
+      case 'PLAYER' :
+        intFormID = 526548;
+        break;
+      case 'BAN' :
+      case 'APPEAL' :
+        intFormID = 527488;
+        break;
+      case 'TRANSFER' :
+        intFormID = 527508;
+        break;
+      case 'NULL' :
+      default :
+    }
+    var strSupportLink = 'https://help.standingstonegames.com/hc/en-us/requests/new';
+    if ( intFormID !== -1 ) {
+      strSupportLink += '?ticket_form_id=' + intFormID;
+    }
+    objSupportEmbed
+      .addDescription( ':link: ' + strSupportLink );
+    message.channel.send( { embed: objSupportEmbed } );
+  }
+}
+
+module.exports = support;

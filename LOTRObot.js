@@ -340,6 +340,7 @@ function hook( channel, title, message, color = 'FF0000', avatarURL = 'https://t
 const objReactionEmoji = {
   'one': '1%EF%B8%8F%E2%83%A3', 'eight': '8%EF%B8%8F%E2%83%A3', 'five': '5%EF%B8%8F%E2%83%A3',
   'four': '4%EF%B8%8F%E2%83%A3', 'goggles': '%F0%9F%A5%BD', 'keycap_ten': '%F0%9F%94%9F',
+  'mailbox_with_mail': '%F0%9F%93%AC', 'mailbox_with_no_mail': '%F0%9F%93%AD',
   'nine': '9%EF%B8%8F%E2%83%A3', 'seven': '7%EF%B8%8F%E2%83%A3', 'six': '6%EF%B8%8F%E2%83%A3',
   'three': '3%EF%B8%8F%E2%83%A3', 'two': '2%EF%B8%8F%E2%83%A3', 'warning': '%E2%9A%A0%EF%B8%8F',
   'wastebasket': '%F0%9F%97%91%EF%B8%8F', 'wave': '%F0%9F%91%8B', 'white_check_mark': '%E2%9C%85',
@@ -359,14 +360,48 @@ const objReactionEmoji = {
 
 async function processDuvodiad( wasForced ) {
   if ( wasForced === undefined ) { wasForced = false; }
+  var saveUpdatedUser = false;
+  const arrWorldRoles = [ '213328810269999114',// Bullroarer
+    '460569121633992737', '460570446811758602', '460569393693327370', '460569481652076554', '460570146671689739',
+    '460569474056323073', '460570361830965269', '460570500717084692', '460570587660681226', '460570869341618177',
+    '506848072077410314', '510170073915195397' ];
+  const arrPrimaryWorldRoles = [ '',//'213328810269999114',// Bullroarer
+    '203267062787866626', '203267155683311616', '203266593394786304', '203266513640226817', '203267078139019265',
+    '203266549971156994', '203267133499637760', '203266384451469312', '203266569038462977', '203267093372731392',
+    '506848426768596992', '510168607549030430' ];
+  const arrKinshipRoles = [ '205811655118946307', //Kinship Recruiters
+    '205320328136622080', '205320393920217090', '205320421430525952', '205320446311268355', '205320473662193664',
+    '205320493945847808', '205320514422439936', '205320581145427969', '205320551177256962', '205320620706234368',
+    '506848250238861333', '510170153070362629' ];
   var guild = client.guilds.get( '201024322444197888' );
-  await guild.roles.get( '448102416039018516' ).members.forEach( async function( member ) {
+  const roleNitro = await guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } );
+  var arrDuvodiads = await guild.roles.find( role => { if ( role.name === 'Duvodiad' ) { return role; } } ).members.keyArray();
+  await guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ).members.forEach( async function( member ) {
+    if ( arrDuvodiads.indexOf( member.id ) === -1 ) { arrDuvodiads.push( member.id ); }
+  } );
+  await guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ).members.forEach( async function( member ) {
+    if ( arrDuvodiads.indexOf( member.id ) === -1 ) { arrDuvodiads.push( member.id ); }
+  } );
+  await guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ).members.forEach( async function( member ) {
+    if ( arrDuvodiads.indexOf( member.id ) === -1 ) { arrDuvodiads.push( member.id ); }
+  } );
+  await guild.members.forEach( async function( member ) {
+    var isNitro = await ( member.roles.keyArray().indexOf( roleNitro.id ) !== -1 ? true : false );
+    var hasRoles = ( member.roles.keyArray().length - isNitro !== 1 ? true : false );
+    if ( !hasRoles ) {
+      console.warn( '%s: @%s#%s (ID:%s) has no roles.', strNow(), ( member.nickname || member.user.username ), member.user.discriminator, member.id );
+      arrDuvodiads.push( member.id );
+    }
+  } );
+  console.log( '%o: Now processing the list of %o arrDuvodiads', strNow(), arrDuvodiads.length );
+  await arrDuvodiads.forEach( async mbrID => {
+    var member = await guild.fetchMember( mbrID );
     var isOwner = await ( settings[ bot ].owners.indexOf( member.id ) !== -1 ? true : false );
     var isBotMod = await ( settings[ bot ].moderators.indexOf( member.id ) !== -1 ? true : false );
     var isCrown = ( member.id === guild.owner.user.id ? true : false );
     var isPSA = ( member.roles.find( role => { if ( role.name === 'PSA' ) { return role; } } ) ? true : false );
-    var staffRole = await guild.roles.get( '201710935788748800' );
-    var isStaff = await ( staffRole && ( staffRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
+    var isStaff = await ( member.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) ? true : false );
+    var isNitro = await ( member.roles.keyArray().indexOf( roleNitro.id ) !== -1 ? true : false );
     var isKickable = ( member.kickable && !isOwner && !isBotMod && !isCrown && !isPSA && !isStaff ? true : false );
     var user = member.user;
     if ( !jsonUsers[ user.id ] || !jsonUsers[ user.id ].guilds[ guild.id ] ) {
@@ -383,8 +418,6 @@ async function processDuvodiad( wasForced ) {
       var isSysop = await ( sysopRole && ( sysopRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
       var modRole = guild.roles.get( '201710877143990272' );
       var isMod = await ( modRole && ( modRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
-      var staffRole = guild.roles.get( '201710935788748800' );
-      var isStaff = await ( staffRole && ( staffRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
       var objAuthorPerms = ( guild.members.get( member.id ).permissions || ( new Discord.Permissions() ) );
       var canManageServer = ( objAuthorPerms.has( 'MANAGE_GUILD' ) ? true : false );
       var canManageRoles = ( objAuthorPerms.has( 'MANAGE_ROLES' ) ? true : false );
@@ -412,21 +445,103 @@ async function processDuvodiad( wasForced ) {
       'i30': 'Hello ' + user.username + '!  Accounts that are 30+ days without an assigned role in **' + guild.name + '** are strongly discouraged.  This allows us to catch accidental multiple accounts from people who try to use the website and then the app, for example, and isn\'t representative of you.  Please indicate to any member of `@Staff`, either in DM or in <#637272044056084480>, what server you play LotRO on, if you\'re on the server for lore, or any other dialog that may help them assign you a role to keep you from getting future `@Duvodiad` pings and from being kicked from the server at the 60+ day mark.  Thanks, LOTROdiscord Staff.',
       'i60': 'Hello **' + user.username + '**!  Accounts that are 60+ days without an assigned role in **' + guild.name + '** are not permitted.  This allows us to catch accidental multiple accounts from people who try to use the website and then the app, for example, and isn\'t representative of you.  You are welcome to rejoin the server at any time by visiting <https://discord.me/LOTROdiscord> from any browser and following the prompts.  If/When you rejoin the server, please indicate to any member of `@Staff`, either in DM or in <#637272044056084480>, what server you play LotRO on, if you\'re on the server for lore, or any other dialog that may help them assign you a role to keep you from getting future `@Duvodiad` pings, a first notice at the 7+ day mark, a second notice at the 30+ day mark, and from being kicked from the server at the 60+ day mark.  Sorry for any inconvience and we hope to see you back when you are ready!'
     };
-    var isDuvodiad = true;// Has to be true since this is a list of members with the role --> guild.roles.get( '448102416039018516' ).members
-    var hasSeven = await ( guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) && ( guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ).members.keyArray() ).indexOf( user.id ) !== -1 );
-    var hasThirty = await ( guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) && ( guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ).members.keyArray() ).indexOf( user.id ) !== -1 );
-    var hasSixty = await ( guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ) && ( guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ).members.keyArray() ).indexOf( user.id ) !== -1 );
+    var isDuvodiad = await ( member.roles.find( role => { if ( role.name === 'Duvodiad' ) { return role; } } ) ? true : false );
+    var hasSeven = await ( member.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) ? true : false );
+    var hasThirty = await ( member.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) ? true : false );
+    var hasSixty = await ( member.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ) ? true : false );
+    var hasNoServer = ( member.roles.find( role => { if ( role.name === 'No server' ) { return role; } } ) ? true : false );
+    var hasRoles = ( member.roles.keyArray().length - isNitro !== 1 ? true : false );
     var intLengthOfStay = ( new Date() ).valueOf() - member.joinedAt.valueOf();
     var intDays = Math.floor( intLengthOfStay / 86400000 );
-    var strDays = intDays.toString() + ( intDays >= 60 ? '*' : '' );
-    if ( isDebug || wasForced ) { console.log('%o: i7: %o\ti30: %o\ti60: %o\tdaysOld: %o\tisKickable: %o\tID: %s\tTag: %s', strNow(), hasSeven, hasThirty, hasSixty, strDays, isKickable, user.id, user.tag ); }
-    var strStaffChan = '201689362906218497';
+    var strDays = ( intDays >= 60 ? '*' : '' );
+    var arrWorlds = [];
+    await arrWorldRoles.forEach( function ( sfSecondary, intSecondary ) {
+      if ( member._roles.indexOf( sfSecondary ) !== -1 ) { arrWorlds.push( sfSecondary ); }
+    } );
+    var arrPrimaryWorlds = [];
+    await arrPrimaryWorldRoles.forEach( function( sfPrimary, intPrimary ) {
+      if ( intPrimary > 0 && member._roles.indexOf( sfPrimary ) !== -1 ) {
+        arrPrimaryWorlds.push( sfPrimary );
+        var sfSecondary = arrWorldRoles[ intPrimary ];
+        if ( member._roles.indexOf( sfSecondary ) === -1 ) {
+          arrWorlds.push( sfSecondary );
+        }
+      }
+    } );
+    var arrKinships = [];
+    arrKinshipRoles.forEach( function( sfKinship, intKinship ) {
+      if ( intKinship > 0 && member._roles.indexOf( sfKinship ) !== -1 ) {
+        arrKinships.push( sfKinship );
+        var sfSecondary = arrWorldRoles[ intKinship ];
+        if ( member._roles.indexOf( sfSecondary ) === -1 ) {
+          arrWorlds.push( sfSecondary );
+        }
+      }
+    } );
+    var isKinshipRecruiter = await ( member.roles.find( role => { if ( role.name === 'Kinship Recruiters' ) { return role; } } ) ? true : false );
+    if ( isDebug || wasForced ) {
+      console.log( '%o: ID: %o\tTag: %o\t%sntag: %o\n\tDd: %o\ti7: %o\ti30: %o\ti60: %o\tdaysOld: %o%s\tcanKick: %o\tisKR: %o\tWorlds: %o/%o',
+        strNow(), user.id, user.tag, ( ( jsonUsers[ user.id ].guilds[ guild.id ].ntag || 'undefined#0000' ).split( '#' )[ 0 ] === '[redacted]' ? '*' : '' ), ( jsonUsers[ user.id ].guilds[ guild.id ].ntag || undefined ), isDuvodiad, hasSeven, hasThirty, hasSixty, intDays, strDays, isKickable,
+        isKinshipRecruiter, arrPrimaryWorlds.length, arrWorlds.length );
+    }
     var msgID = ( jsonUsers[ user.id ].guilds[ guild.id ].welcomeID || null );
-    if ( isDuvodiad && !user.bot && !hasSixty && intLengthOfStay >= ( 86400000 * 60 ) ) {
+    if ( ( !hasRoles || isDuvodiad ) && !user.bot && ( ( !hasSeven && intDays > 7 ) || ( !hasThirty && intDays > 30 ) || ( !hasSixty && intDays > 60 ) ) ) {
+      if ( !hasRoles && !isDuvodiad ) {
+        member.addRole( guild.roles.find( role => { if ( role.name === 'Duvodiad' ) { return role; } } ), '- Added `@Duvodiad` role for member with no other server role.' ).then( async roleAdded => {
+          jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
+          saveUpdatedUser = true;
+          member.send( 'Welcome to *' + guild.name + '*!  You\'ve been automatically assigned the `@Duvodiad` role for the server. This means that, until you get in touch with `@Staff` in <#201024322444197888> to let them know which server you play on (or none), you\'ll be pinged every time another new player joins the server.' ).catch( errDM => {
+            guild.channels.get( '253534754350170112' ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has me or the server blocked and was unable to be notified via DM that they\'re now a member of `@Duvodiad`.' );
+            console.warn( '%o: %s (ID:%s) has me or the server blocked and was unable to be notified via DM that the `@Duvodiad` role was added.', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id );
+          } );
+          client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has been added to `@Duvodiad`.  This may be because the bot was down when they joined or because all their server roles were removed.  Please see if you can assist them with roles. :slight_smile:' );
+          if ( isDebug || wasForced ) { console.log( '%o: %s was added to @Duvodiad.', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag ); }
+        } ).catch( errAddRole => {
+          console.error( '%o: Error attempting to add the `@Duvodiad` role to %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errAddRole );
+        } );
+      }
+      if ( !hasSeven && intDays >= 7 ) {
+        member.addRole( guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ), 'Restored lost `@i7` role.' ).then( async roleAdded => {
+          jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
+          saveUpdatedUser = true;
+          client.channels.get( strLogChan[ guild.id ].logChan.id ).send( 'Restored ' + member + '#' + user.discriminator + ' (:id:' + member.id + ')\'s lost ' + guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) + ' role.' );
+          if ( isDebug || wasForced ) { console.log('%o: %s is again @i7; welcome msgID: %o', strNow(), user.tag, msgID ); }
+          if ( msgID !== null ) {
+            console.log( '%o: Attempting to add :seven: reaction to %s welcome message - %s', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID );
+            ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.seven ).catch( errReact => { console.error( '%o: Unable to add :seven: reaction to %s: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, errReact ); } );
+          }
+        } ).catch( errAddRole => { console.error( '%o: Error attempting to add role `@i7` to %s ( %s ): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errAddRole ); } );
+      }
+      if ( !hasThirty && intDays >= 30 ) {
+        member.addRole( guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ), 'Restored lost `@i30` role.' ).then( async roleAdded => {
+          jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
+          saveUpdatedUser = true;
+          client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( 'Restored ' + member + '#' + user.discriminator + ' (:id:' + member.id + ')\'s lost ' + guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) + ' role.' );
+          if ( isDebug || wasForced ) { console.log('%o: %s is again @i30; welcome msgID: %o', strNow(), user.tag, msgID ); }
+          if ( msgID !== null ) {
+            console.log( '%o: Attempting to add :warning: reaction to %s welcome message - %s', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID );
+            ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.warning ).catch( errReact => { console.error( '%o: Unable to add :warning: reaction to %s: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, errReact ); } );
+          }
+        } ).catch( errAddRole => { console.error( '%o: Error attempting to add role `@i30` to %s ( %s ): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errAddRole ); } );
+      }
+      if ( !hasSixty && intDays >= 60 ) {// This should never happen, leaving it in as a catch...
+        member.addRole( guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ), 'Restored lost `@i60` role.' ).then( async roleAdded => {
+          jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
+          saveUpdatedUser = true;
+          client.channels.get( strLogChan[ guild.id ].logChan.id ).send( 'Restored ' + member + '#' + user.discriminator + ' (:id:' + member.id + ')\'s lost ' + guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ) + ' role.' );
+          if ( isDebug || wasForced ) { console.log('%o: %s is again @i60; welcome msgID: %o', strNow(), user.tag, msgID ); }
+          if ( msgID !== null ) {
+            console.log( '%o: Attempting to add :boot: reaction to %s welcome message - %s', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID );
+            ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.boot ).catch( errReact => { console.error( '%o: Unable to add :boot: reaction to %s: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, errReact ); } );
+          }
+        } ).catch( errAddRole => { console.error( '%o: Error attempting to add role `@i60` to %s ( %s ): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errAddRole ); } );
+      }
+    }
+    if ( ( !hasRoles || isDuvodiad ) && !user.bot && !hasSixty && intDays === 60 ) {
       await member.send( objMessages.i60 )
         .then( async dm => {
           await client.channels.get( strLogChan[ guild.id ].logChan.id ).send( ( member.nickname || user.username ) + '#' + user.discriminator + ' (' + member + ') :arrow_right: <@&453212243094536206> day inactivity message :mailbox_with_mail:' );
-          if ( isKickable ) {            
+          if ( isKickable ) {
             await member.addRole( guild.roles.find( role=> { if ( role.name === 'i60' ) { return role; } } ), 'User has had no roles assigned for 60+ days.' )
             .then( async roleAdded => {
               await member.kick( 'New account inactive 60+ days.' ).then( async kicked => {
@@ -456,24 +571,38 @@ async function processDuvodiad( wasForced ) {
           }
         } )
         .catch( async errDM => {
-          if ( errDM.code !== 50007 ) {
-            console.error( '%o: Error attempting to DM %s ( %s ): %o', strNow(), user.username, user.id, errDM );
+          if ( errDM.code === 50007 ) {
+            console.warn( '%o: Unable to DM %s ( %s ) who has me blocked about @i60.', strNow(), user.username, user.id );
           } else {
-            console.warn( '%s Error attempting to DM %s (%s): %o', strNow(), user.username, user.id, errDM.message );
+            console.error( '%s Error attempting to DM %s (%s) about @i60: %o', strNow(), user.username, user.id, errDM );
           }
-          await client.channels.get( strStaffChan ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + ( member.nickname || user.username ) + '#' + user.discriminator + ' (' + member + ') :arrow_right: <@&453212243094536206> day inactivity message :mailbox_with_no_mail:\nPlease attempt to send DM with:\n```\n' + objMessages.i60 + '\n```\nThen react to this post with :mailbox_with_mail: or :mailbox_with_no_mail: respectively.  Finally, kick with reason `New account inactive 60+ days.` and react to this post with :boot:, thanks.' ).catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having NOT received the 60 day msg: %o', strNow(), user.username, user.id, errLog ); } );
+          var msgErrDM = await client.channels.get( '201689362906218497' ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + ( member.nickname || user.username ) + '#' + user.discriminator + ' (' + member + ') :arrow_right: <@&453212243094536206> day inactivity message :mailbox_with_no_mail:\nPlease attempt to send DM with:\n```\n' + objMessages.i60 + '\n```\nThen react to this post with :mailbox_with_mail: or :mailbox_with_no_mail: respectively.  Finally, kick with reason `New account inactive 60+ days.` and react to this post with :boot:, thanks.' ).catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having NOT received the 60 day msg: %o', strNow(), user.username, user.id, errLog ); } );// send to #staff-room
+          msgErrDM.react( objReactionEmoji.mailbox_with_no_mail ).then( reacted => {
+            msgErrDM.react( objReactionEmoji.mailbox_with_mail )
+              .catch( errReact => { console.error( '%s: Unable to react to msgErrDM: %o', strNow(), errReact ); } );
+          } )
+            .catch( errReact => { console.error( '%s: Unable to react to msgErrDM: %o', strNow(), errReact ); } );
         } );
     }
-    else if ( isDuvodiad && !user.bot && !hasThirty && intLengthOfStay >= ( 86400000 * 30 ) ) {
+    else if ( ( !hasRoles || isDuvodiad ) && !user.bot && !hasThirty && intDays === 30 ) {
       await member.addRole( guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ), 'User has had no roles assigned for 30+ days.' ).then( async roleAdded => {
         hasThirty = true;
         member.send( objMessages.i30 ).then( dmSent => {
           client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( user.username + ' (' + member + ') :arrow_right: <@&453212144394174477> day inactivity message :mailbox_with_mail:' )
             .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having received the 30 day msg: %o', strNow(), user.username, user.id, errLog ); } );
-        } ).catch( errDM => {
-          console.error( '%o: Error attempting to DM %s ( %s ): %o', strNow(), user.username, user.id, errDM );
-          client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + user.username + ' (' + member + ') :arrow_right: <@&453212144394174477> day inactivity message :mailbox_with_no_mail:\n```\n' + objMessages.i30 + '\n```' )
+        } ).catch( async errDM => {
+          if ( errDM.code === 50007 ) {
+            console.warn( '%o: Unable to DM %s ( %s ) who has me blocked about @i30.', strNow(), user.username, user.id );
+          } else {
+            console.error( '%s Error attempting to DM %s (%s) about @i30: %o', strNow(), user.username, user.id, errDM );
+          }
+          var msgErrDM = await client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + user.username + ' (' + member + ') :arrow_right: <@&453212144394174477> day inactivity message :mailbox_with_no_mail:\n```\n' + objMessages.i30 + '\n```' )
             .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having NOT received the 30 day msg: %o', strNow(), user.username, user.id, errLog ); } );
+          msgErrDM.react( objReactionEmoji.mailbox_with_no_mail ).then( reacted => {
+            msgErrDM.react( objReactionEmoji.mailbox_with_mail )
+              .catch( errReact => { console.error( '%s: Unable to react to msgErrDM: %o', strNow(), errReact ); } );
+          } )
+            .catch( errReact => { console.error( '%s: Unable to react to msgErrDM: %o', strNow(), errReact ); } );
         } );
         if ( isDebug || wasForced ) { console.log('%o: %s is now @i30; welcome msgID: %o', strNow(), user.tag, msgID ); }
         if ( msgID !== null ) {
@@ -489,17 +618,27 @@ async function processDuvodiad( wasForced ) {
         client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( ':x:' + guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ', **I was unable to assign ' + user.username + ' (' + member + ') to ' + guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) + ':** ' + errAddRole )
           .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having received the @i30 role: %o', strNow(), user.username, user.id, errLog ); } );
       } );
+      saveUpdatedUser = true;
     }
-    else if ( isDuvodiad && !user.bot && !hasSeven && intLengthOfStay >= ( 86400000 * 7 ) ) {
+    else if ( ( !hasRoles || isDuvodiad ) && !user.bot && !hasSeven && intDays === 7 ) {
       await member.addRole( guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ), 'User has had no roles assigned for 7+ days.' ).then( async roleAdded => {
         hasSeven = true;
         member.send( objMessages.i7 ).then( dmSent => {
           client.channels.get( strLogChan[ guild.id ].logChan.id ).send( user.username + ' (' + member + ') :arrow_right: <@&453212071480524821> day inactivity message :mailbox_with_mail:' )
             .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having received the 7 day msg: %o', strNow(), user.username, user.id, errLog ); } );
-        } ).catch( errDM => {
-          console.error( '%o: Error attempting to DM %s ( %s ): %o', strNow(), user.username, user.id, errDM );
-          client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + user.username + ' (' + member + ') :arrow_right: <@&453212071480524821> day inactivity message :mailbox_with_no_mail:\n```\n' + objMessages.i7 + '\n```' )
+        } ).catch( async errDM => {
+          if ( errDM.code === 50007 ) {
+            console.warn( '%o: Unable to DM %s ( %s ) who has me blocked about @i30.', strNow(), user.username, user.id );
+          } else {
+            console.error( '%s Error attempting to DM %s (%s) about @i30: %o', strNow(), user.username, user.id, errDM );
+          }
+          var msgErrDM = await client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + user.username + ' (' + member + ') :arrow_right: <@&453212071480524821> day inactivity message :mailbox_with_no_mail:\n```\n' + objMessages.i7 + '\n```' )
             .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having NOT received the 7 day msg: %o', strNow(), user.username, user.id, errLog ); } );
+          msgErrDM.react( objReactionEmoji.mailbox_with_no_mail ).then( reacted => {
+            msgErrDM.react( objReactionEmoji.mailbox_with_mail )
+              .catch( errReact => { console.error( '%s: Unable to react to msgErrDM: %o', strNow(), errReact ); } );
+          } )
+            .catch( errReact => { console.error( '%s: Unable to react to msgErrDM: %o', strNow(), errReact ); } );
         } );
         if ( isDebug || wasForced ) { console.log('%o: %s is now @i7; welcome msgID: %o', strNow(), user.tag, msgID ); }
         if ( msgID !== null ) {
@@ -514,51 +653,77 @@ async function processDuvodiad( wasForced ) {
         console.error( '%o: Error attempting to add role `@i7` to %s ( %s ): %o', strNow(), user.username, user.id, errAddRole );
         client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( ':x:' + guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ', **I was unable to assign ' + user.username + ' (' + member + ') to ' + guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) + ':** ' + errAddRole )
           .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having received the @i7 role: %o', strNow(), user.username, user.id, errLog ); } );
+      } );
+      saveUpdatedUser = true;
+    }
+    else if ( ( !hasRoles || isDuvodiad || hasSeven || hasThirty || hasSixty ) && !isPSA && ( arrPrimaryWorlds.length >= 1 || hasNoServer ) ) {
+      var arrRemRoles = [ '448102416039018516' ];// @Duvodiad
+      if ( hasSeven ) { arrRemRoles.push( guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ).id ); }
+      if ( hasThirty ) { arrRemRoles.push( guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ).id ); }
+      if ( hasSixty ) { arrRemRoles.push( guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ).id  ); }
+      await member.removeRoles( arrRemRoles ).then( async roleRemoved => {
+        jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].roles = roleRemoved.roles.keyArray();
+        saveUpdatedUser = true;
+        roleRemoved.send( 'Congratulations!  Your - <@&' + arrRemRoles.join( '> - <@&' ) + '> - role' + ( arrRemRoles.length === 1 ? ' has' : 's have' ) + ' been removed and you\'re no longer considered a new member in *' + roleRemoved.guild.name + '*!  This means you are free from <#637272044056084480> and should no longer get a ping every time someone new joins the server!' ).catch( errDM => {
+          roleRemoved.guild.channels.get( '253534754350170112' ).send( roleRemoved.guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + roleRemoved + ' (**' + ( jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].ntag || roleRemoved.user.tag ) + '**) has me or the server blocked and was unable to be notified via DM that their `@Duvodiad` role was removed.' );
+          console.warn( '%o: %s (ID:%s) has me or the server blocked and was unable to be notified via DM that their `@Duvodiad` role was removed.', strNow(), ( jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].ntag || roleRemoved.user.tag ), roleRemoved.id );
         } );
+        msgID = jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].welcomeID;
+        if ( msgID !== null ) {
+          client.channels.get( '637272044056084480' ).fetchMessage( msgID ).then( welcomeMsg => {
+            welcomeMsg.delete().then( isDeleted => { jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].welcomeID = null; saveUpdatedUser = true; } ).catch( async errDel => {
+              console.error( '%o: Unable to delete %s\'s welcome message (ID:%s) from "%s" on removal of @Duvodiad role: %o', strNow(), jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].ntag, msgID, roleRemoved.guild.name, errDel );
+              welcomeMsg.react( objReactionEmoji.wastebasket ).catch( errReact => { console.error( '%s: Unable to react to %s\'s welcome message (ID:%s) after failing to delete from "%s" on removal of @Duvodiad: %o', strNow(), jsonUsers[ roleRemoved.id ].guilds[ roleRemoved.guild.id ].ntag, msgID, roleRemoved.guild.name, errReact ); } );
+            } );
+          } )
+          .catch( errFetchMsg => {
+            if ( errFetchMsg.code === 10008 ) { jsonUsers[ member.id ].guilds[ guild.id ].welcomeID = null; saveUpdatedUser = true; }
+            else {
+              console.error( '%o: Unable to fetch %s\'s welcome message (https://discordapp.com/channels/201024322444197888/637272044056084480/%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg );
+            }
+          } );
+        }
+      } ).catch( errRemRole => {
+        if ( errRemRole.code ) { console.log( '%s: errRemRole.code === %o', strNow(), errRemRole.code ); }
+        if ( errRemRole.code === 10008 ) { jsonUsers[ member.id ].guilds[ guild.id ].welcomeID = null; saveUpdatedUser = true; }
+        else {
+          console.error( '%o: There was an error attempting to remove the `%s` role%s from %s (ID:%s): %o', strNow(), arrRemRoles.join(), ( arrRemRoles.length === 1 ? '' : 's' ), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole );
+        }
+      } );
+      if ( hasSeven ) { member.removeRole( '453212071480524821', 'Removing `@i7` role for user no longer a `@Duvodiad`.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveUpdatedUser = true; } ).catch( errRemRole => { console.error( '%o: There was an error attempting to remove the `@i7` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole ); } ); }
+      if ( hasThirty ) { member.removeRole( '453212144394174477', 'Removing `@i30` role for user no longer a `@Duvodiad`.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveUpdatedUser = true; } ).catch( errRemRole => { console.error( '%o: There was an error attempting to remove the `@i30` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole ); } ); }
+      if ( hasSixty ) { member.removeRole( '453212243094536206', 'Removing `@i60` role for user no longer a `@Duvodiad`.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveUpdatedUser = true; } ).catch( errRemRole => { console.error( '%o: There was an error attempting to remove the `@i60` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole ); } ); }
     }
-    else if ( isDuvodiad && !user.bot && ( ( !hasSeven && intLengthOfStay >= ( 86400000 * 7 ) ) || ( hasSeven && !hasThirty && intLengthOfStay >= ( 86400000 * 30 ) ) || ( hasThirty && !hasSixty && intLengthOfStay >= ( 86400000 * 60 ) ) ) ) {
-      if ( !hasSeven && intLengthOfStay >= ( 86400000 * 7 ) ) {
-        member.addRole( guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ), 'Restored lost `@i7` role.' )
-          .then( async roleAdded => {
-            client.channels.get( strLogChan[ guild.id ].logChan.id ).send( 'Restored ' + member + '#' + user.discriminator + ' (:id:' + member.id + ')\'s lost ' + guild.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) + ' role.' );
-            if ( isDebug || wasForced ) { console.log('%o: %s is again @i7; welcome msgID: %o', strNow(), user.tag, msgID ); }
-            if ( msgID !== null ) {
-              console.log( '%o: Attempting to add :seven: reaction to %s welcome message - %s', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID );
-              ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.seven ).catch( errReact => { console.error( '%o: Unable to add :seven: reaction to %s: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, errReact ); } );
-            }
-          } ).catch( errAddRole => { console.error( '%o: Error attempting to add role `@i7` to %s ( %s ): %o', strNow(), user.username, user.id, errAddRole ); } );
-      }
-      if ( hasSeven && !hasThirty && intLengthOfStay >= ( 86400000 * 30 ) ) {
-        member.addRole( guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ), 'Restored lost `@i30` role.' )
-          .then( async roleAdded => {
-            client.channels.get( strLogChan[ member.guild.id ].logChan.id ).send( 'Restored ' + member + '#' + user.discriminator + ' (:id:' + member.id + ')\'s lost ' + guild.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) + ' role.' );
-            if ( isDebug || wasForced ) { console.log('%o: %s is again @i30; welcome msgID: %o', strNow(), user.tag, msgID ); }
-            if ( msgID !== null ) {
-              console.log( '%o: Attempting to add :warning: reaction to %s welcome message - %s', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID );
-              ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.warning ).catch( errReact => { console.error( '%o: Unable to add :warning: reaction to %s: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, errReact ); } );
-            }
-          } ).catch( errAddRole => { console.error( '%o: Error attempting to add role `@i30` to %s ( %s ): %o', strNow(), user.username, user.id, errAddRole ); } );
-      }
-      if ( hasThirty && !hasSixty && intLengthOfStay >= ( 86400000 * 60 ) ) {
-        member.addRole( guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ), 'Restored lost `@i60` role.' )
-          .then( async roleAdded => {
-            client.channels.get( strLogChan[ guild.id ].logChan.id ).send( 'Restored ' + member + '#' + user.discriminator + ' (:id:' + member.id + ')\'s lost ' + guild.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ) + ' role.' );
-            if ( isDebug || wasForced ) { console.log('%o: %s is again @i60; welcome msgID: %o', strNow(), user.tag, msgID ); }
-            if ( msgID !== null ) {
-              console.log( '%o: Attempting to add :boot: reaction to %s welcome message - %s', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID );
-              ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.boot ).catch( errReact => { console.error( '%o: Unable to add :boot: reaction to %s: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, errReact ); } );
-            }
-          } ).catch( errAddRole => { console.error( '%o: Error attempting to add role `@i60` to %s ( %s ): %o', strNow(), user.username, user.id, errAddRole ); } );
-      }
-    }
+    else if ( !isDuvodiad && !isPSA && arrPrimaryWorlds.length === 0 && !hasNoServer && !member.user.bot ) {
+      member.addRole( guild.roles.find( role => { if ( role.name === 'Duvodiad' ) { return role; } } ), '- Added `@Duvodiad` role for member with no other server role.' ).then( roleAdded => {
+        jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
+        saveUpdatedUser = true;
+        member.send( 'Welcome to *' + guild.name + '*!  You\'ve been automatically assigned the `@Duvodiad` role for the server. This means that, until you get in touch with `@Staff` in <#201024322444197888> to let them know which server you play on (or none), you\'ll be pinged every time another new player joins the server.' ).catch( errDM => {
+          guild.channels.get( '253534754350170112' ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has me or the server blocked and was unable to be notified via DM that they\'re now a member of `@Duvodiad`.' );
+          console.warn( '%o: %s (ID:%s) has me or the server blocked and was unable to be notified via DM that the `@Duvodiad` role was added.', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id );
+        } );
+        guild.channels.get( strLogChan[ guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has been added to `@Duvodiad`.  This may be because the bot was down when they joined or because all their server roles were removed.  Please see if you can assist them with roles. :slight_smile:' );
+        if ( isDebug || wasForced ) { console.log( '%o: %s was added to @Duvodiad.', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag ); }
+      } ).catch( errAddRole => { console.error( '%o: There was an error attempting to add the `@Duvodiad` role to %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errAddRole ); } );
+    }//*/
 //    else { /* Do nothing at this time */ }
+    if ( saveUpdatedUser ) {
+      strJsonUsers = JSON.stringify( jsonUsers );
+      fs.writeFile( fsUsers, strJsonUsers, ( errWrite ) => {
+        if ( errWrite ) {
+          client.guilds.get( '201024322444197888' ).channels.get( '235896771547627521' ).send( strNow() + ': Failed to save "new user" on guild join.' );
+          throw errWrite;
+        } else { console.log( '%o: Successfully saved %s on processDuvodiad( %s ).', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id ); }
+      } );
+    }
   } );
   return true;
 }
 
-async function processAutoRoles( member ) {
-  if ( typeof( member ) !== 'object' ) { member = await client.fetchUser( member.toString() ); }
-  const guild = member.guild;
+/*async function processAutoRoles( member, wasForced ) {
+  if ( wasForced === undefined ) { wasForced = false; }
+  var saveUpdatedUser = false;
+  const roleNitro = await guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } );
   const arrWorldRoles = [ '213328810269999114',// Bullroarer
     '460569121633992737', '460570446811758602', '460569393693327370', '460569481652076554', '460570146671689739',
     '460569474056323073', '460570361830965269', '460570500717084692', '460570587660681226', '460570869341618177',
@@ -571,46 +736,65 @@ async function processAutoRoles( member ) {
     '205320328136622080', '205320393920217090', '205320421430525952', '205320446311268355', '205320473662193664',
     '205320493945847808', '205320514422439936', '205320581145427969', '205320551177256962', '205320620706234368',
     '506848250238861333', '510170153070362629' ];
-  var isKinshipRecruiter = await ( member.roles.find( role => { if ( role.name === 'Kinship Recruiters' ) { return role; } } ) ? true : false );
-  var saveNewUser = false;
-  
-  if ( Object.keys( jsonUsers ).indexOf( member.id ) === -1 ) {
-    jsonUsers[ member.id ] = {
-      'tag': member.user.tag,
-      'email': null,
-//            'facebook': null,
-      'guilds': {},
-      'intGlobalPoints': 0,
-      'dateLastPoints': ( new Date() ),
-//            'reddit': null,
-//            'steam': null,
-      'timezone': null,
-//            'twitter': null,
-//            'twitch': null,
-//            'youtube': null
-    };
-    jsonUsers[ member.id ].guilds[ guild.id ] = {
-      'canManageRoles': false,
-      'canManageServer': false,
-      'intPoints': 0,
-      'dateLastPoints': ( new Date() ),
-      'isAdministrator': false,
-      'isCrown': false,
-      'ntag': ( member.nickname === null ? member.user.tag : member.nickname + '#' + member.user.discriminator ),
-      'roles': ( member.roles.keyArray() || [] )
-    };
-    saveNewUser = true;
+  var guild = client.guilds.get( '201024322444197888' );
+    var isOwner = await ( settings[ bot ].owners.indexOf( member.id ) !== -1 ? true : false );
+    var isBotMod = await ( settings[ bot ].moderators.indexOf( member.id ) !== -1 ? true : false );
+    var isCrown = ( member.id === guild.owner.user.id ? true : false );
+    var isPSA = ( member.roles.find( role => { if ( role.name === 'PSA' ) { return role; } } ) ? true : false );
+    var isStaff = await ( member.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) ? true : false );
+    var isKickable = ( member.kickable && !isOwner && !isBotMod && !isCrown && !isPSA && !isStaff ? true : false );
+    var user = member.user;
+    if ( !jsonUsers[ user.id ] || !jsonUsers[ user.id ].guilds[ guild.id ] ) {
+    var isCrown = ( member.id === guild.owner.user.id ? true : false );
+    var isAdmin = false;
+    var objAdminRoles = [];
+    guild.roles.array().forEach( function( role, index ) {
+      if ( ( new Discord.Permissions( role.permissions ) ).has( 8 ) ) { objAdminRoles[ objAdminRoles.length ] = role; }
+    } );
+    objAdminRoles.forEach( function( role, index ) {
+      if ( ( role.members.keyArray() ).indexOf( member.id ) !== -1 || member.id === guild.ownerID ) { isAdmin = true; }
+    } );
+    var sysopRole = guild.roles.get( '201710817614364673' );
+    var isSysop = await ( sysopRole && ( sysopRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
+    var modRole = guild.roles.get( '201710877143990272' );
+    var isMod = await ( modRole && ( modRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
+    var staffRole = guild.roles.get( '201710935788748800' );
+    var isStaff = await ( staffRole && ( staffRole.members.keyArray() ).indexOf( member.id ) !== -1 ? true : false );
+    var objAuthorPerms = ( guild.members.get( member.id ).permissions || ( new Discord.Permissions() ) );
+    var canManageServer = ( objAuthorPerms.has( 'MANAGE_GUILD' ) ? true : false );
+    var canManageRoles = ( objAuthorPerms.has( 'MANAGE_ROLES' ) ? true : false );
+    var canInvite = ( objAuthorPerms.has( 'CREATE_INSTANT_INVITE' ) ? true : false );
+    var thisGuild = { 'canManageRoles': canManageRoles, 'canManageServer': canManageServer,
+      'intPoints': 0, 'dateLastPoints': ( new Date() ), 'isAdministrator': isAdmin, 'isCrown': isCrown,
+      'ntag': ( member.nickname === null ? user.tag : member.nickname + '#' + user.discriminator ),
+      'roles': ( member.roles.keyArray() || [] ) };
+    if ( !jsonUsers[ member.id ] ) {
+      var thisUser = { 'tag': user.tag, 'email': null, 'guilds': {}, 'intGlobalPoints': 0,
+        'dateLastPoints': ( new Date() ), 'timezone': null };
+      jsonUsers[ user.id ] = thisUser;
+    }
+    jsonUsers[ user.id ].guilds[ guild.id ] = thisGuild;
+    let strJsonUsers = JSON.stringify( jsonUsers );
+    fs.writeFile( fsUsers, strJsonUsers, ( errWrite ) => {
+      if ( errWrite ) {
+        client.guilds.get( '201024322444197888' ).channels.get( '235896771547627521' ).send( strNow() + ': Failed to save jsonUsers on message.' );
+        throw errWrite;
+      } else { console.log( '%o: Successfully saved jsonUsers with "%s" on processDuvodiad().', strNow(), thisGuild.ntag ); }
+    } );
   }
-  if ( isDebug ) { console.log( '%o: processAutoRoles( %s ): %s\nisKinshipRecruiter: %o', strNow(), member.id, jsonUsers[ member.id ].guilds[ guild.id ].ntag, isKinshipRecruiter ); }
-  
-  var arrPrimaryWorlds = [];
+  var isDuvodiad = await ( member.roles.find( role => { if ( role.name === 'Duvodiad' ) { return role; } } ) ? true : false );
+  var hasSeven = await ( member.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) ? true : false );
+  var hasThirty = await ( member.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) ? true : false );
+  var hasSixty = await ( member.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ) ? true : false );
+  var hasNoServer = ( member.roles.find( role => { if ( role.name === 'No server' ) { return role; } } ) ? true : false );
+  var intLengthOfStay = ( new Date() ).valueOf() - member.joinedAt.valueOf();
+  var intDays = Math.floor( intLengthOfStay / 86400000 );
+  var strDays = intDays.toString() + ( intDays >= 60 ? '*' : '' );
   var arrWorlds = [];
-  var arrKinships = [];
-  
   await arrWorldRoles.forEach( function ( sfSecondary, intSecondary ) {
     if ( member._roles.indexOf( sfSecondary ) === -1 ) { arrWorlds.push( sfSecondary ); }
   } );
-  
+  var arrPrimaryWorlds = [];
   await arrPrimaryWorldRoles.forEach( function( sfPrimary, intPrimary ) {
     if ( intPrimary > 0 && member._roles.indexOf( sfPrimary ) !== -1 ) {
       arrPrimaryWorlds.push( sfPrimary );
@@ -620,21 +804,26 @@ async function processAutoRoles( member ) {
       }
     }
   } );
-  
+  var arrKinships = [];
   arrKinshipRoles.forEach( function( sfKinship, intKinship ) {
-		if ( intKinship > 0 && member._roles.indexOf( sfKinship ) !== -1 ) {
+    if ( intKinship > 0 && member._roles.indexOf( sfKinship ) !== -1 ) {
       arrKinships.push( sfKinship );
-			var sfSecondary = arrWorldRoles[ intKinship ];
-			if ( member._roles.indexOf( sfSecondary ) === -1 ) {
-				arrWorlds.push( sfSecondary );
-			}
-		}
+      var sfSecondary = arrWorldRoles[ intKinship ];
+      if ( member._roles.indexOf( sfSecondary ) === -1 ) {
+        arrWorlds.push( sfSecondary );
+      }
+    }
   } );
+  var isKinshipRecruiter = await ( member.roles.find( role => { if ( role.name === 'Kinship Recruiters' ) { return role; } } ) ? true : false );
+  if ( isDebug || wasForced ) {
+    console.log('%o: ID: %s\tTag: %s\nDuvodiad: %o\ti7: %o\ti30: %o\ti60: %o\tdaysOld: %o\tisKickable: %o\tisKinshipRecruiter: %o\n\tarrPrimaryWorlds: %o\n\tarrWorlds:%o',
+      strNow(), user.id, user.tag, isDuvodiad, hasSeven, hasThirty, hasSixty, strDays, isKickable, isKinshipRecruiter, arrPrimaryWorlds, arrWorlds );
+  }
   
   if ( !isKinshipRecruiter && arrKinships.length >= 1 ) {
     member.addRole( arrKinshipRoles[ 0 ], '- Added `@Kinship Recruiters` role for member with at least one `@ServerKin` role.' ).then( roleAdded => {
       jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
-      saveNewUser = true;
+      saveUpdatedUser = true;
     } ).catch( errAddRole => {
       var isTimedOut = false, errReason = 'Unable to add';
       if ( errAddRole[ 'message' ] == 'Adding the role timed out.' ) { errReason = 'Timed out adding'; isTimedOut = true; }
@@ -644,7 +833,7 @@ async function processAutoRoles( member ) {
   else if ( isKinshipRecruiter && arrKinships.length === 0 ) {
     member.removeRole( arrKinshipRoles[ 0 ], '- Removed `@Kinship Recruiters` role for member with no `@ServerKin` roles.' ).then( roleRemoved => {
       jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
-      saveNewUser = true;
+      saveUpdatedUser = true;
       if ( !isDebug ) {
         member.send( 'I\'ve automatically removed your `@Kinship Recruiters` role on **' + guild.name + '** due to the lack of a `@ServerKin` role.  If you believe this is incorrect, please go to <#201024322444197888> and ask a member of `@Staff` to give you the `@ServerKin` role for any LotRO game world where you are able to recruit members to your kinship.  Thank you.' ).catch( errDM => {
         guild.channels.get( '253534754350170112' ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has me or the server blocked and was unable to be notified via DM that their `@Kinship Recruiters` role was removed.' );
@@ -659,21 +848,20 @@ async function processAutoRoles( member ) {
   }
   if ( arrWorlds.length === 1 ) {
     console.log( '%s: Adding role: %o', strNow(), arrWorlds[ 0 ] );
-    /*member.addRole( arrWorlds[ 0 ], '- Added matching world role' ).catch( errAddRole => {
+    member.addRole( arrWorlds[ 0 ], '- Added matching world role' ).catch( errAddRole => {
       var isTimedOut = false, errReason = 'Unable to add';
       if ( errAddRole[ 'message' ] == 'Adding the role timed out.' ) { errReason = 'Timed out adding'; isTimedOut = true; }
       console.error( '%o: %s %s\'s matching world role on %s:\n%o', strNow(), errReason, ( member.nickname === null ? member.user.tag : member.nickname + '#' + member.user.discriminator ), guild.name, ( isTimedOut ? '' : errAddRole ) );
-    } );//*/
+    } );
   }
   else if ( arrWorlds.length > 1 ) {
     console.log( '%s: Adding %i roles: %o', strNow(), arrWorlds.length, arrWorlds );
-    /*member.addRoles( arrWorlds, '- Added matching world roles' ).catch( errAddRole => {
+    member.addRoles( arrWorlds, '- Added matching world roles' ).catch( errAddRole => {
       var isTimedOut = false, errReason = 'Unable to add';
       if ( errAddRole[ 'message' ] == 'Adding the roles timed out.' ) { errReason = 'Timed out adding'; isTimedOut = true; }
       console.error( '%o: %s %s\'s matching world roles on %s:\n%o', strNow(), errReason, ( member.nickname === null ? member.user.tag : member.nickname + '#' + member.user.discriminator ), guild.name, ( isTimedOut ? '' : errAddRole ) );
-    } );//*/
-  }
-  
+    } );
+  }  
   if ( arrPrimaryWorlds.length > 1 ) {
     var strTooManyMains = 'Hello ' + member.user.username + '!  You seem to have too many (' + arrPrimaryWorlds.length + ') __main__ servers defined.  Please indicate to any member of `@Staff`, either in DM, in <#637272044056084480>, or in <#201024322444197888>, which **1** server is your main server to play LotRO on.  If you play equally on multiple servers and/or don\'t want to specify only one **or** you don\'t play on any server, please let them know that as well and they\'ll assign your main server as `@No server`.  Thanks, LOTROdiscord Staff.';
     await member.send( strTooManyMains ).then( dmSent => {
@@ -687,57 +875,7 @@ async function processAutoRoles( member ) {
       .catch( errLog => { console.error( '%o: Error attempting to log %s ( %s ) as having NOT received the too many (' + arrPrimaryWorlds.length + ') mains msg: %o', strNow(), member.user.username, member.id, errLog ); } );
     } );
   }
-  
-  var isPSA = ( member.roles.find( role => { if ( role.name === 'PSA' ) { return role; } } ) ? true : false );
-  var hasNoServer = ( member.roles.find( role => { if ( role.name === 'No server' ) { return role; } } ) ? true : false );
-  var isDuvodiad = ( member.roles.find( role => { if ( role.name === 'Duvodiad' ) { return role; } } ) ? true : false );
-  var hasSeven = ( member.roles.find( role => { if ( role.name === 'i7' ) { return role; } } ) ? true : false );
-  var hasThirty = ( member.roles.find( role => { if ( role.name === 'i30' ) { return role; } } ) ? true : false );
-  var hasSixty = ( member.roles.find( role => { if ( role.name === 'i60' ) { return role; } } ) ? true : false );
-  if ( isDuvodiad && !isPSA && ( arrWorlds.length >= 1 || hasNoServer ) ) {
-    await member.removeRole( '448102416039018516', '- Removed `@Duvodiad` role for member with other roles.' ).then( async roleRemoved => {
-      jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
-      saveNewUser = true;
-      member.send( 'Congratulations!  You are no longer considered a new member in *' + guild.name + '*!' ).catch( errDM => {
-        guild.channels.get( '253534754350170112' ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has me or the server blocked and was unable to be notified via DM that their `@Duvodiad` role was removed.' );
-        console.warn( '%o: %s (ID:%s) has me or the server blocked and was unable to be notified via DM that their `@Duvodiad` role was removed.', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id );
-      } );
-      var msgID = ( jsonUsers[ member.id ] ? jsonUsers[ member.id ].guilds[ guild.id ].welcomeID : null );
-      if ( msgID !== null ) {
-        ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => {
-          if ( errFetchMsg.code === 10008 ) { jsonUsers[ member.id ].guilds[ guild.id ].welcomeID = null; saveNewUser = true; }
-          else {
-            console.error( '%o: Unable to fetch %s\'s welcome message (ID:%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg );
-          }
-        } ) ).delete().then( isDeleted => { jsonUsers[ member.id ].guilds[ guild.id ].welcomeID = null; saveNewUser = true; } ).catch( async errDel => {
-          console.error( '%o: Unable to delete %s\'s welcome message (ID:%s) from "%s" on removal of @Duvodiad role: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, guild.name, errDel );
-          ( await client.channels.get( '637272044056084480' ).fetchMessage( msgID ).catch( errFetchMsg => { console.error( '%o: Unable to fetch %s\'s welcome message (https://discordapp.com/channels/201024322444197888/637272044056084480/%s): %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, errFetchMsg ); } ) ).react( objReactionEmoji.wastebasket ).catch( errReact => { console.error( '%s: Unable to react to %s\'s welcome message (ID:%s) after failing to delete from "%s" on removal of @Duvodiad: %o', strNow(), jsonUsers[ member.id ].guilds[ guild.id ].ntag, msgID, guild.name, errReact ); } );
-        } );
-      }
-    } ).catch( errRemRole => {
-      console.log( '%s: errRemRole.code === %o', strNow(), errRemRole.code );
-      if ( errRemRole.code === 10008 ) { jsonUsers[ member.id ].guilds[ guild.id ].welcomeID = null; saveNewUser = true; }
-      else {
-        console.error( '%o: There was an error attempting to remove the `@Duvodiad` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole );
-      }
-    } );
-    if ( hasSeven ) { member.removeRole( '453212071480524821', 'Removing `@i7` role for user no longer a `@Duvodiad`.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveNewUser = true; } ).catch( errRemRole => { console.error( '%o: There was an error attempting to remove the `@i7` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole ); } ); }
-    if ( hasThirty ) { member.removeRole( '453212144394174477', 'Removing `@i30` role for user no longer a `@Duvodiad`.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveNewUser = true; } ).catch( errRemRole => { console.error( '%o: There was an error attempting to remove the `@i30` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole ); } ); }
-    if ( hasSixty ) { member.removeRole( '453212243094536206', 'Removing `@i60` role for user no longer a `@Duvodiad`.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveNewUser = true; } ).catch( errRemRole => { console.error( '%o: There was an error attempting to remove the `@i60` role from %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errRemRole ); } ); }
-  }
-  else if ( !isDuvodiad && !isPSA && arrPrimaryWorlds.length === 0 && !hasNoServer && !member.user.bot ) {
-    await member.addRole( '448102416039018516', '- Added `@Duvodiad` role for member with no other server role.' ).then( roleAdded => {
-      jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray();
-      saveNewUser = true;
-      member.send( 'Welcome to *' + guild.name + '*!  You\'ve been automatically assigned the `@Duvodiad` role for the server. This means that, until you get in touch with `@Staff` in <#201024322444197888> to let them know which server you play on (or none), you\'ll be pinged every time another new player joins the server.' ).catch( errDM => {
-        guild.channels.get( '253534754350170112' ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has me or the server blocked and was unable to be notified via DM that they\'re now a member of `@Duvodiad`.' );
-        console.warn( '%o: %s (ID:%s) has me or the server blocked and was unable to be notified via DM that the `@Duvodiad` role was added.', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id );
-      } );
-      guild.channels.get( strLogChan[ guild.id ].logChan.id ).send( guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) + ': ' + member + ' (**' + ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) + '**) has been added to `@Duvodiad`.  This may be because the bot was down when they joined or because all their server roles were removed.  Please see if you can assist them with roles. :slight_smile:' );
-    } ).catch( errAddRole => { console.error( '%o: There was an error attempting to add the `@Duvodiad` role to %s (ID:%s): %o', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id, errAddRole ); } );
-  }
-  
-  if ( saveNewUser ) {
+  if ( saveUpdatedUser ) {
     strJsonUsers = JSON.stringify( jsonUsers );
     fs.writeFile( fsUsers, strJsonUsers, ( errWrite ) => {
       if ( errWrite ) {
@@ -746,6 +884,29 @@ async function processAutoRoles( member ) {
       } else { console.log( '%o: Successfully saved %s on processAutoRoles( %s ).', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id ); }
     } );
   }
+  return true;
+}//*/
+
+async function redactNick( member, checkType ) {
+  var guild = member.guild;
+  var useName = ( checkType = 'nickname' ? member.nickname : member.user.username );
+  var jsonUser = ( jsonUsers[ member.id ] || null );
+  var jsonGuild = ( jsonUser ? jsonUser.guilds[ guild.id ] : null );
+  member.setNickname( '[redacted]', 'Redacting invalid ' + checkType + '.' )
+    .then( wasRedacted => {
+      wasRedacted.addRole( '692797584187588710', 'Invalid ' + checkType + '.' )
+        .then( setNick => { wasRedacted.send( ':name_badge: Your ' + checkType + ' in ' + guild.name + ' has been changed to `[redacted]` because `' + useName + '` was determined to be inappropriate or contain characters that are not properly rendered on most devices.  Feel free to change or request a change or reset to your nickname to the server\'s staff.' ).catch( errDM => { console.error( '%o: Failed to DM %s (:id:%s) that their ' + checkType + ' change to `%s` was invalid and they were instead set to `[redacted]` in %s.', strNow(), ( jsonGuild ? jsonGuild.ntag : ( jsonUser ? jsonUser.tag : wasRedacted.username + '#' + wasRedacted.discriminator ) ), member.id, useName, guild.name ); } ) } )
+        .catch( errAddRole => { console.error( '%o: Error attempting to add role `@[redacted]` to %s ( %s ): %o', strNow(), ( jsonGuild ? jsonGuild.ntag : ( jsonUser ? jsonUser.tag : wasRedacted.username ) ), wasRedacted.id, errAddRole ); } );
+    } )
+    .catch( errSetNick => {
+      if ( errSetNick.code === 50013 ) { console.warn( '%o: I don\'t have permission to set %s\'s ' + checkType + ' to `[redacted]` in %s', strNow(), wasRedacted.username, guild.name ); }
+      else { console.error( '%o: Unable to set %s\'s ' + checkType + ' to `[redacted]`: %o', strNow(), wasRedacted.username, errSetNick ); }
+    } );
+  if ( ( client.guilds.get( '201024322444197888' ).roles.find( role => { if ( role.name === 'Level 3' ) { return role; } } ).members.keyArray() ).indexOf( member.id ) !== -1 ) {
+    client.guilds.get( '201024322444197888' ).channels.get( '253534754350170112' )
+      .send( ':name_badge: `' + ( member.nickname || member.user.username ) + '`\'s nickname was changed to `[redacted]` and they\'ve been added to <@&692797584187588710> because `' + useName + '` was not appropriate or contained characters that are not properly rendered on most devices (' + member + ').' )
+      .catch( errSend => { console.error( '%o: Unable to send message to %s#%s on nickname change: %o', strNow(), guild.name, client.guilds.get( '201024322444197888' ).channels.get( '253534754350170112' ).name, errSend ); } );
+  }
 }
 
 async function nameCheck( mbrNew, mbrOld, checkType ) {
@@ -753,28 +914,17 @@ async function nameCheck( mbrNew, mbrOld, checkType ) {
   var guild = mbrNew.guild;
   var isPermitted = ( mbrNew.roles.keyArray().indexOf( '693020345162137610' ) !== -1 ? true : false );
   var isRedacted = ( mbrNew.roles.keyArray().indexOf( '692797584187588710' ) !== -1 ? true : false );
-  var oldUser = mbrOld.user, newUser = mbrNew.user;
+  var oldUser = mbrOld.user
+  var newUser = mbrNew.user;
   var regexInvalidName = /([A-Z\u0400-\u042F]{3,}|[^ \w\u0400-\u04FF]{3,}|[^ -ÿ\u0400-\u04FF]+)/;
   var regexBadWords = /(ass ?w?hole|cock ?su(c|k)+(er|ing)|cunt|drug ?deal(er|ing|ah?)?|fuck(er|ing)?|ni[bg]{2}(ah?|er|ling))s?/gi;
   var useName = ( checkType = 'nickname' ? mbrNew.nickname : newUser.username );
   var isValidGoodName = ( regexInvalidName.test( useName ) || regexBadWords.test( useName ) ? true : false );
+  var didRedaction = false;
   if ( !isPermitted && ( ( checkType === 'nickname' && !isValidGoodName ) || ( checkType === 'username' && !isValidGoodName && !mbrNew.nickname ) ) ) {
-    mbrNew.setNickname( '[redacted]', 'Redacting invalid ' + checkType + '.' )
-      .then( isRedacted => {
-        member.addRole( '692797584187588710', 'Invalid ' + checkType + '.' )
-          .then( setNick => { member.send( ':name_badge: Your ' + checkType + ' in ' + guild.name + ' has been changed to `[redacted]` because `' + useName + '` was determined to ' + ( regexInvalidName.test( useName ) ? 'be inappropriate' : 'contain characters that are not properly rendered on most devices' ) + '.  Feel free to change or request a change or reset to your nickname to the server\'s staff.' ).catch( errDM => { console.error( '%o: Failed to DM %s#%s (:id:%s) that their ' + checkType + ' change to `%s` was invalid and they were instead set to `[redacted]` in %s.', strNow(), oldUser.username. oldUser.discriminator, mbrOld.id, useName, guild.name ); } ) } )
-          .catch( errAddRole => { console.error( '%o: Error attempting to add role `@[redacted]` to %s ( %s ): %o', strNow(), newUser.username, member.id, errAddRole ); } );
-      } )
-      .catch( errSetNick => {
-        if ( errSetNick.code === 50013 ) { console.warn( '%o: I don\'t have permission to set %s\'s ' + checkType + ' to `[redacted]` in %s', strNow(), oldUser.username, guild.name ); }
-        else { console.error( '%o: Unable to set %s\'s ' + checkType + ' to `[redacted]`: %o', strNow(), oldUser.username, errSetNick ); }
-      } );
-    if ( ( client.guilds.get( '201024322444197888' ).roles.find( role => { if ( role.name === 'Level 3' ) { return role; } } ).members.keyArray() ).indexOf( mbrNew.id ) !== -1 ) {
-      client.guilds.get( '201024322444197888' ).channels.get( '253534754350170112' )
-        .send( ':name_badge: `' + ( mbrOld.nickname ? mbrOld.nickname : oldUser.username ) + '`\'s nickname was changed to `[redacted]` and they\'ve been added to <@&692797584187588710> because `' + useName + '` ' + ( regexInvalidName.test( useName ) ? 'was not appropriate' : 'contained characters that are not properly rendered on most devices' ) + '(' + mbrNew + ').' )
-        .catch( errSend => { console.error( '%o: Unable to send message to %s#%s on nickname change: %o', strNow(), mbrNew.guild.name, client.guilds.get( '201024322444197888' ).channels.get( '253534754350170112' ).name, errSend ); } );
-    }
-  } else if ( isPermitted || mbrNew.nickname !== '[redacted]' ) {
+    didRedaction = await redactNick( mbrNew, checkType );
+  }
+  else if ( isPermitted || mbrNew.nickname !== '[redacted]' ) {
     if ( isPermitted ) {
       mbrNew.removeRole( '693020345162137610', 'Nickname was permitted.' ).then( roleRemoved => { jsonUsers[ mbrNew.id ].guilds[ guild.id ].roles = mbrNew.roles.keyArray(); } )
         .catch( errRemRole => { console.error( '%o: Error attempting to remove role `@Permitted` from %s ( %s ): %o', strNow(), newUser.username, mbrNew.id, errRemRole ); } );
@@ -931,10 +1081,7 @@ client.setInterval( function() {// Idle processing
     isBotIdle = true;
   }
 }, 300000 );// 300000ms == 5m
-client.setInterval( async function() {// processAutoRoles() &&  processDuvodiad() once every three hours.
-//  client.guilds.get( '201024322444197888' ).members.forEach( async member => { await processAutoRoles( member ); } );
-  await processDuvodiad();
-}, 259200000 );
+client.setInterval( async function() { await processDuvodiad(); }, 259200000 );// processDuvodiad() once every three hours.
 
 async function doWelcome( guild, guildWelcomeMessages, member, objUser, saveNewUser ) {
   if ( isDebug ) { console.info( '%o: Processing doWelcome() for %s in %s', strNow(), objUser.username, guild.name ); }
@@ -1289,12 +1436,12 @@ client.on( 'guildMemberUpdate', async ( mbrOld, mbrNew ) => {
           mbrUpdateChanges.added.push( mbrNew.roles.keyArray()[ idRole ] );
         }
       }
-    if ( isDebug ) { console.log( '%o: Running processAutoRoles( mbrNew ) for %s.', strNow(), newUser.tag ); }
-      var isAutoRoled = false;//processAutoRoles( mbrNew );//
+      /*if ( isDebug ) { console.log( '%o: guildMemberUpdate is running processAutoRoles( mbrNew ) for %s.', strNow(), newUser.tag ); }
+      var isAutoRoled = processAutoRoles( mbrNew );
       if ( !isAutoRoled ) {
         console.error( '%o: Failed to complete processAutoRoles( mbrNew ) for %s%s.', strNow(), newUser.tag, ( jsonUserInGuildExists ? '. Attempting to store changes to json anyway' : '' ) );
         if ( jsonUserInGuildExists ) { jsonUsers[ mbrNew.id ].guilds[ guild.id ].roles = mbrNew.roles.keyArray(); }
-      }
+      }//*/
     }
   }
   if ( jsonUserInGuildExists ) {
@@ -2050,438 +2197,420 @@ client.on( 'message', async ( message ) => {// Regular messages
           }
         } 
       }
-    }
-    
-    switch ( command ) {
-      case 'dv' : case 'dver' :
-        if ( isOwner || isBotMod ) {
-          message.reply( 'I\'m running Discord.js v'+ Discord.version + ' → <https://discord.js.org/#/docs/main/' + Discord.version + '/general/welcome>' );
-          message.delete().catch( errDel => { console.error( '%o: Unable to delete !%s request by %s: %o', strNow(), command, message.author.tag, errDel ); } );
-        }
-        break;
-      case 'apvmp' :// Change the #pvmp password to speak.
-        if ( isOwner || isBotMod || isCrown || isAdmin || isSysop || isMod ) {
-          if ( arrArgs[ 0 ] !== undefined ) {
-            strAcceptRules = arrArgs[ 0 ];
-            settings[ bot ].customKeys.strAcceptRules = strAcceptRules;
-            strSettings = JSON.stringify( settings );
-            fs.writeFile( fsSettings, strSettings, ( errWrite ) => {
-              if ( errWrite ) {
-                message.channel.send( 'Unable to change `strAcceptRules`, please check the error logs. Currently set to: **`' + strAcceptRules + '`**' );
-                throw errWrite;
-              } else {
-                message.channel.send( ( message.guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) || message.author ) + ': `strAcceptRules` is now set to: **`' + strAcceptRules + '`** by: ' + message.author );
-              }
-            } );
-          } else {
-            message.channel.send( ( message.guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) || message.author ) + ': `strAcceptRules` is set as: **`' + strAcceptRules + '`**.' );
+      
+      switch ( command ) {
+        case 'dv' : case 'dver' :
+          if ( isOwner || isBotMod ) {
+            message.reply( 'I\'m running Discord.js v'+ Discord.version + ' → <https://discord.js.org/#/docs/main/' + Discord.version + '/general/welcome>' );
+            message.delete().catch( errDel => { console.error( '%o: Unable to delete !%s request by %s: %o', strNow(), command, message.author.tag, errDel ); } );
           }
-        } else {
-          message.channel.send( 'Nice try, ' + message.author + ', but you\'re not my master.' );
-        }
-        break;
-      case strAcceptRules.toLowerCase() :// Someone uttered the password, let them speak!
-        if ( message.channel.id === '389446825570074624' ) {// #pvmp
-          if ( message.guild.members.get( message.author.id ).roles.keyArray().indexOf( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ).id ) === -1 ) {
-            message.delete( { reason: message.author + ' has accepted the rules of the channel by using the `!' + strAcceptRules + '` command.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-            message.guild.members.get( message.author.id ).addRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- ' + message.author.tag + ' has promised to not to be a dick.' );
-            message.channel.send( message.author + ' has promised to not violate Wheaton\'s Law and may now speak.' );
-          }
-          else {
-            message.delete( { reason: 'Cleaning up a DICKish `!' + strAcceptRules + '` in the wrong channel.' } ).catch( errDel => { console.error( '%o: %o', strNow(), errDel ); } );
-            message.channel.send( message.author + ' you already have ' + message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ) + ', and I don\'t think your shenanigans are funny!' );
-          }
-        }
-        else if ( message.channel.id === '201689362906218497' || message.channel.id === '235896771547627521' ) {// #staff-room or #fungeons
-          message.react( objReactionEmoji.white_check_mark ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-          message.channel.send( strRules );
-        }
-        else {
-          message.delete( { reason: 'Cleaning up a salty `!' + strAcceptRules + '` in the wrong channel.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-          message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
-        }
-        break;
-      case 'pvpmp' :
-      case 'pvmpmp' :// Staff has overridden the need for the person to utter the magic word.
-        if ( message.channel.id === '389446825570074624' && isStaff ) {// #pvmp && @Staff
-          if ( arrArgs[ 0 ] !== undefined ) {
-            if ( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] ) {
-              let usrMarancil = message.guild.members.get( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] );
-              usrMarancil.addRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- User was a given an override by ' + message.author.tag + '.' );
-              message.react( '510515835673247776' ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-              message.channel.send( '<:approved:510515835673247776> ' + usrMarancil + ' has been given special permission by ' + message.author + ' and may now speak in this channel.' );
-              message.delete().catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-            }
-          }
-          else {
-            message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` missing a user.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-            message.channel.send( 'Sorry, ' + message.author + ', but you forgot to tell me who was a naughty.' );
-          }
-        } else {
-          message.author.send( 'The **`!' + command + '`** command needs to be triggered by a **' + staffRole.name + '** member (which you are' + ( isStaff ? '' : ' **not**' ) + ') in the <#389446825570074624> channel and not in <#' + message.channel.id + '>.' );
-        }
-        break;
-      case 'pvpban' :
-      case 'pvmpban' :
-        if ( message.channel.id === '389446825570074624' && ( isStaff || isMoorMaster ) ) {// #pvmp && @Staff || @Moor Masters
-          if ( arrArgs[ 0 ] !== undefined ) {
-            if ( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] ) {
-              let usrDick = message.guild.members.get( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] );
-            message.channel.overwritePermissions( usrDick, { SEND_MESSAGES: false, ADD_REACTIONS: false }, 'User was a dick and ' + message.author.tag + ' had me channel ban them.' ).catch( permError => { console.error( 'Error trying to overwritePermissions for %o: %o', usrDick.id, permError ); } );
-              usrDick.removeRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- User was a dick and ' + message.author.tag + ' had me remove this role.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveNewUser = true; } ).catch( errRemRole => { console.error( '%s: Unable to remove role "MonsterPlayer" from %s: %o', strNow(), usrDick.user.tag, errRemRole ); } );
-              message.react( '248447317617803264' ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-              message.channel.fetchMessages( {
-                limit: 100
-              } ).then( messages => {
-                let arrMessages = messages.array();
-                arrMessages = arrMessages.filter( thisMessage => thisMessage.author.id === usrDick.id );
-                arrMessages.length = 100;
-                arrMessages.map( thisMessage => thisMessage.delete().catch( errMap => { console.error( '%o: %o', strNow(), errMap ); } ) );
-              } );
-              message.channel.send( '<:banhammer:248447317617803264> ' + usrDick + ' has violated Wheaton\'s Law and may no longer speak. <:RIP:474572596646510622>' );
-            }
-          }
-          else {
-            message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` missing a user.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-            message.channel.send( 'Sorry, ' + message.author + ', but you forgot to tell me who was a naughty.' );
-          }
-        }
-        else {
-          message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` in the wrong channel.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-          message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
-        }
-        break;
-      case 'pvpunban' :
-      case 'pvmpunban' :
-        if ( message.channel.id === '389446825570074624' && isStaff ) {// #pvmp && @Staff
-          if ( arrArgs[ 0 ] !== undefined ) {
-            if ( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] ) {
-              let usrBryn = message.guild.members.get( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] );
-              message.channel.permissionOverwrites.get( usrBryn.id ).delete( { reason: 'User was forgiven and ' + message.author.tag + ' had me clear ban.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-              usrBryn.addRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- User was a forgiven and ' + message.author.tag + ' had me re-add this role.' );
-              message.react( '510515835673247776' ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
-              message.channel.send( '<:approved:510515835673247776> ' + usrBryn + ' has been forgiven and may speak yet again. <:approved:510515835673247776>' );
-            }
-          }
-          else {
-          message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` missing a user.' } ).catch( errDel => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + errDel ); } );
-          message.channel.send( 'Sorry, ' + message.author + ', but you forgot to tell me who was a forgiven.' );
-          }
-        }
-        else {
-          message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` in the wrong channel.' } ).catch( errDel => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + errDel ); } );
-          message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
-        }
-        break;
-      case 'deactivate' :
-        message.react( objReactionEmoji.white_check_mark ).catch( errReact => { console.error( '%o: Failed to react to !deactivate request: %o', strNow(), errReact ); } );
-        sendDM( message, await message.client.users.get( settings[ bot ].owners[ 0 ] ), message.author + '#' + message.author.discriminator + ' (:id:' + message.author.id + ') "deactivated": ' + strArgs );
-        break;
-      case 'edit' :
-        if ( isOwner || isBotMod || isCrown || isAdmin || isSysop ) {
-          var guild, channel, thisMessage;
-          guild = message.client.guilds.find( guild => { if ( guild.id === message.guild.id ) { return guild; } } );
-          channel = guild.channels.find( chan => { if ( chan.id === message.channel.id ) { return chan; } } );
-          thisMessage = arrArgs[ 0 ];
-          var strNewMsg = arrArgs.slice( 1 ).join( ' ' );
-          channel.fetchMessage( thisMessage ).then( objMsg => {
-            objMsg.edit( strNewMsg ).then( edited => {
-              message.react( objReactionEmoji.white_check_mark ).then( r => {
-                message.client.setTimeout( function(){
-                  message.delete().catch( errDel => { console.error( '%o: %o', strNow(), errDel ); } );
-                }, 7500 );
-              } ).catch( errReact => { console.error( '%o: %o', strNow(), errReact ); } );
-            } ).catch( errEdit => { console.error( '%o: %o', strNow(), errEdit ); } );
-          } );
-        }
-        else {
-          message.react( objReactionEmoji.x ).then( r => {
-            message.client.setTimeout( function(){
-              message.delete().catch( errDel => { console.error( '%o: %o', strNow(), errDel ); } );
-            }, 2500 );
-          } ).catch( errReact => { console.error( '%o: %o', strNow(), errReact ); } );
-          message.author.send( 'I\'m sorry, ' + message.author.tag + ', but you can\'t edit my messages in the `' + message.guild.name + '` server.' )
-            .then( dm => {
-              message.react( objReactionEmoji.white_check_mark ).catch( errReact => { console.error( '%o: %o', strNow(), errReact ); } );
-            } ).catch( errDM => {
-              message.react( objReactionEmoji.x ).then( resReact => {
-                message.reply( 'You\'ll need to accept DMs from members of this server in order to get a list of my commands DMed to you.' );
-              } ).catch( errReact => {
-                message.channel.send( 'Can anyone tell ' + message.author + ' that they\'ll need to unblock me in order to get a list of my commands DMed to them. ^^ <@&201710935788748800>' );
-                console.error( '%o: %o', strNow(), errReact );
-              } );
-              console.error( '%o: %o', strNow(), errDM );
-            } );
-        }
-        break;
-      case 'debug' :
-        var debugParameter;
-        if ( arrArgs[ 0 ] !== undefined ) {
-          debugParameter = arrArgs[ 0 ].trim().toLowerCase();
-        }
-        if ( arrArgs[ 0 ] !== undefined && debugParameter === 'state' ) {
-          if ( isDebug ) {
-           message.react( objReactionEmoji.one ).catch( e => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
-          } else {
-           message.react( objReactionEmoji.zero ).catch( e => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
-          }
-        }
-        else if ( isOwner ) {
-          var msgToggle, boolUpdateDebugMode = true;
-          var toggle = await toBoolean( debugParameter );
-          var strToggle = await ( toggle || ( toggle && !isDebug ) ? 'on' : 'off' );
-          msgToggle = await client.channels.get( settings[ bot ].debug[ 0 ] ).send( '_is attempting to turn ' + strToggle + ' debug mode for_ ' + message.author );
-          if ( ( isDebug && toggle ) || ( !isDebug && !toggle ) ) {
-            await msgToggle.edit( '_debug mode was already ' + strToggle + '_' );
-            await msgToggle.react( objReactionEmoji.person_facepalming ).catch( e => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
-            message.delete().catch( e => { console.log( 'Unable to delete ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
-            boolUpdateDebugMode = false;
-          } else if ( toggle ) {
-            isDebug = true;
-          } else if ( !toggle ) {
-            isDebug = false;
-          } else {
-            isDebug = !isDebug;
-          }
-          if ( boolUpdateDebugMode ) {
-            settings[ bot ].onError.isDebugMode = isDebug;
-            fs.readFile( fsSettings, 'utf8', ( errRead, fileData ) => {
-              if ( errRead ) { throw errRead; }
-              fileData = JSON.parse( fileData );
-              fileData[ bot ] = settings[ bot ];
-              var strSettings = JSON.stringify( fileData );
+          break;
+        case 'apvmp' :// Change the #pvmp password to speak.
+          if ( isOwner || isBotMod || isCrown || isAdmin || isSysop || isMod ) {
+            if ( arrArgs[ 0 ] !== undefined ) {
+              strAcceptRules = arrArgs[ 0 ];
+              settings[ bot ].customKeys.strAcceptRules = strAcceptRules;
+              strSettings = JSON.stringify( settings );
               fs.writeFile( fsSettings, strSettings, ( errWrite ) => {
-                if ( errWrite ) { throw errWrite; } else {
-                   if ( isDebug ) {
-                    msgToggle.edit( '_debug mode is now on_' );
-                    msgToggle.react( objReactionEmoji.one ).catch( errReact => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errReact ); } );
-                  } else {
-                    msgToggle.edit( '_debug mode is now off_' );
-                    msgToggle.react( objReactionEmoji.zero ).catch( errReact => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errReact ); } );
-                  }
-                  message.delete().catch( errDel => { console.log( 'Unable to delete ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errDel ); } );
+                if ( errWrite ) {
+                  message.channel.send( 'Unable to change `strAcceptRules`, please check the error logs. Currently set to: **`' + strAcceptRules + '`**' );
+                  throw errWrite;
+                } else {
+                  message.channel.send( ( message.guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) || message.author ) + ': `strAcceptRules` is now set to: **`' + strAcceptRules + '`** by: ' + message.author );
                 }
               } );
-            } );
+            } else {
+              message.channel.send( ( message.guild.roles.find( role => { if ( role.name === 'Staff' ) { return role; } } ) || message.author ) + ': `strAcceptRules` is set as: **`' + strAcceptRules + '`**.' );
+            }
+          } else {
+            message.channel.send( 'Nice try, ' + message.author + ', but you\'re not my master.' );
           }
-        }
-        client.user.setStatus( 'online' );
-        isBotIdle = false;
-        break;
-  /*    case 'encourage' :
-        if ( !isBot ) {
-          message.delete().then( async delTrigger => {
-            async function getEncouraged( intMsgID ) {
-              if ( intMsgID === undefined ) { intMsgID = await getRand( 1, 6 ); }
-              switch ( intMsgID ) {
-                case 1 :
-                  return 'you\'re an idiot...'; break;
-                case 2 :
-                  return 'I love you.  :heart:'; break;
-                case 3 :
-                  return 'you\'re a super :star:'; break;
-                case 4 :
-                  return 'you are awesome today!'; break;
-                case 5 :
-                  return 'you\'re a silly goose...'; break;
-                case 6 :
-                  return 'you\'re great.'; break;
-                default :
-                  return 'I don\'t feel so good...';
+          break;
+        case strAcceptRules.toLowerCase() :// Someone uttered the password, let them speak!
+          if ( message.channel.id === '389446825570074624' ) {// #pvmp
+            if ( message.guild.members.get( message.author.id ).roles.keyArray().indexOf( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ).id ) === -1 ) {
+              message.delete( { reason: message.author + ' has accepted the rules of the channel by using the `!' + strAcceptRules + '` command.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+              message.guild.members.get( message.author.id ).addRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- ' + message.author.tag + ' has promised to not to be a dick.' );
+              message.channel.send( message.author + ' has promised to not violate Wheaton\'s Law and may now speak.' );
+            }
+            else {
+              message.delete( { reason: 'Cleaning up a DICKish `!' + strAcceptRules + '` in the wrong channel.' } ).catch( errDel => { console.error( '%o: %o', strNow(), errDel ); } );
+              message.channel.send( message.author + ' you already have ' + message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ) + ', and I don\'t think your shenanigans are funny!' );
+            }
+          }
+          else if ( message.channel.id === '201689362906218497' || message.channel.id === '235896771547627521' ) {// #staff-room or #fungeons
+            message.react( objReactionEmoji.white_check_mark ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+            message.channel.send( strRules );
+          }
+          else {
+            message.delete( { reason: 'Cleaning up a salty `!' + strAcceptRules + '` in the wrong channel.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+            message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
+          }
+          break;
+        case 'pvpmp' :
+        case 'pvmpmp' :// Staff has overridden the need for the person to utter the magic word.
+          if ( message.channel.id === '389446825570074624' && isStaff ) {// #pvmp && @Staff
+            if ( arrArgs[ 0 ] !== undefined ) {
+              if ( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] ) {
+                let usrMarancil = message.guild.members.get( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] );
+                usrMarancil.addRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- User was a given an override by ' + message.author.tag + '.' );
+                message.react( '510515835673247776' ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+                message.channel.send( '<:approved:510515835673247776> ' + usrMarancil + ' has been given special permission by ' + message.author + ' and may now speak in this channel.' );
+                message.delete().catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
               }
             }
-            let toEncourage = ( message.mentions.members.first() || message.author );
-            message.channel.send( toEncourage + ', ' + await getEncouraged() ).then( async msgSent => {
-              client.setTimeout( async function() {
-                if ( message.channel.lastMessage !== msgSent ) {
-                  message.channel.send( toEncourage + ', ' + await getEncouraged() );
-                }
-              }, ( await getRand( 12, 27 ) * 1000 ) );
-            } );
-          } ).catch( errDel => {
-            message.reply( 'I am unable to process your request.  Please ask ' + message.guild.owner.user.tag + ' to make sure I have the `MANAGE_MESSAGES` permission.  Thanks! :heart:' ).then( replySuccess => { replySuccess.edit( message.author + ', I am unable to process your request.  Please ask ' + message.guild.owner.user + ' to make sure I have the `MANAGE_MESSAGES` permission.  Thanks! :heart:' ) } );
-          } );
-        }
-        break;//*/
-      case 'dm' :
-        if ( isOwner || isBotMod || isCrown || isAdmin ) {
-          var strWhom;
-          strArgs = arrArgs.slice( 1 ).join( ' ' );
-          if ( arrArgs[ 0 ].toLowerCase() === 'all' && isOwner ) {
-            message.client.users.forEach( function ( user ) {
-              sendDM( message, user.user, strArgs );
-            } );
-            strWhom = 'everyone';
-          } else if ( arrArgs[ 0 ].toLowerCase() === 'server' ) {
-            message.guild.members.forEach( function ( user ) {
-              sendDM( message, user.user, strArgs );
-            } );
-            strWhom = 'everyone in ' + message.guild.name;/*
-          } else if ( message.mentions.roles.keyArray().length >= 1 ) {
-            message.guild.roles.get( message.mentions.roles.first().id ).members.forEach( function ( user ) {
-              sendDM( message, user.user, strArgs );
-            } );
-            strWhom = 'everyone with ' + message.guild.name + '\'s ' + message.guild.roles.get( message.mentions.roles.first().id ).name + ' role';//*/
+            else {
+              message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` missing a user.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+              message.channel.send( 'Sorry, ' + message.author + ', but you forgot to tell me who was a naughty.' );
+            }
           } else {
-            var user = await message.client.fetchUser( arrArgs[ 0 ].match( /<@!?[\d]*>/g )[ 0 ].replace( /[<@!>]/g, '' ) );
-            sendDM( message, user, strArgs );
-            strWhom = user.tag;
+            message.author.send( 'The **`!' + command + '`** command needs to be triggered by a **' + staffRole.name + '** member (which you are' + ( isStaff ? '' : ' **not**' ) + ') in the <#389446825570074624> channel and not in <#' + message.channel.id + '>.' );
           }
-        }
-        else {
-          message.channel.send( 'I\'m sorry, ' + message.author + ', you don\'t have the authority to use that command.' );
-        }
-        message.delete( { reason: 'Cleaning up ' + message.author + '\'s request to DM `' +  + '` to ' + strWhom + '.' } );
-        break;
-      case 'report' :
-        if ( message.guild.id === '464630580810612756' ) {
-          message.guild.channels.get( '482699262350721046' ).send( message.author + '**#' + message.author.discriminator + '** reported in <#' + message.channel.id + '>: ' + strArgs );
-          message.delete();
-        }
-        break;
-      case 'about' :
-      case 'account' :
-      case 'config' :
-      case 'define' :
-      case 'disable' :
-      case 'enable' :
-      case 'eval' :
-      case 'groups' :
-      case 'install' :
-      case 'inviteme' :
-      case 'kinships' :
-      case 'load' :
-  //    case 'log' :
-      case 'logs' :
-      case 'lsregister' :
-      case 'mordor' :
-      case 'noserver' :
-      case 'n00b' :
-      case 'ping' :
-      case 'prefix' :
-  //    case 'prune' :
-      case 'reload' :
-      case 'roll' :
-      case 'say' :
-      case 'server' :
-      case 'unload' :
-        if ( isDebug ) {
-          client.channels.get( settings[ bot ].debug[ 0 ] ).send( 'is processing a `!' + command + '` command.' );
-        }
-        client.user.setStatus( 'online' );
-        isBotIdle = false;
-        break;
-  /*    case 'dc' :
-        var defaultChannelIs = await getDefaultChannel( message.guild.id );
-        console.log( 'The default channel for %o is: %o', message.guild.name, defaultChannelIs );
-        break;//*/
-      default : 
-        /* Do nothing */
-        var objReactionBlacklist = [ '700808423692042382' ];
-        if ( message.author.id !== message.client.user.id && objReactionBlacklist.indexOf( message.guild.id ) === -1 ) {
-          var arrFoundReacts = ( strArgs.match( /\b(Smeagol|beornings?|captains?|champions?|burglars?|guardians?|hunters?|lore[ \-]?masters?|minstrels?|rune[ \-]?keepers?|wardens?|dwar(f|ve(n|s))|el(f|ve(n|s))|hobbits?|(hu)?mans?|mithril[ \-]?coins?|l(?:otro )?p(?:oint)?s?|ssg|twitch|youtube|lotro-?wiki|pie|rip|the( one( true)?)? ring|troll(?:(ol)*|ing|s)?|(ShoeMaker|Technical_13)|salt(y)?)\b/gi ) || [] );
-          if ( arrFoundReacts.length > 0 ) {
-            if ( isDebug ) { console.log( '%o: I found  %d fun reaction keywords, [ "%s" ], in the string: %s', strNow(), arrFoundReacts.length, arrFoundReacts.join( '", "' ), strArgs ); }
-            var arrDoReactionIDs = [], arrDoReactionNames = [];
-            arrFoundReacts.forEach( async function( getReact ) {
-              getReact = getReact.toLowerCase().replace( /[^A-Za-z0-9]/g, '' ).replace( /s$/, '' );
-              getReact = ( getReact.indexOf( 'trollol' ) !== -1 ? 'troll' : getReact );
-              getReact = ( getReact.indexOf( 'ring' ) !== -1 ? 'onering' : getReact );
-              getReact = ( getReact.indexOf( 'shoemaker' ) !== -1 || getReact.indexOf( 'technical_13' ) !== -1 ? 'techniCal' : getReact );
-              switch ( getReact ) {
-                case 'smeagol':
-                  arrDoReactionIDs.push( '510515649085308929' ); arrDoReactionNames.push( 'Smeagol' ); break;
-                case 'beorning':
-                  arrDoReactionIDs.push( '237646627521691648' ); arrDoReactionNames.push( 'beorning' ); break;
-                case 'captain':
-                  arrDoReactionIDs.push( '237647949927022593' ); arrDoReactionNames.push( 'captain' ); break;
-                case 'champion':
-                  arrDoReactionIDs.push( '237647952577822720' ); arrDoReactionNames.push( 'champion' ); break;
-                case 'burglar':
-                  arrDoReactionIDs.push( '237647950124154892' ); arrDoReactionNames.push( 'burglar' ); break;
-                case 'guardian':
-                  arrDoReactionIDs.push( '237647981728235520' ); arrDoReactionNames.push( 'guardian' ); break;
-                case 'hunter':
-                  arrDoReactionIDs.push( '237648076880347146' ); arrDoReactionNames.push( 'hunter' ); break;
-                case 'loremaster':
-                  arrDoReactionIDs.push( '237648082228084736' ); arrDoReactionNames.push( 'loremaster' ); break;
-                case 'minstrel':
-                  arrDoReactionIDs.push( '237648098493595651' ); arrDoReactionNames.push( 'minstrel' ); break;
-                case 'runekeeper':
-                  arrDoReactionIDs.push( '237648127891341312' ); arrDoReactionNames.push( 'runekeeper' ); break;
-                case 'warden':
-                  arrDoReactionIDs.push( '237648209286135811' ); arrDoReactionNames.push( 'warden' ); break;
-                case 'dwarf':case 'dwarve':case 'dwarven':
-                  arrDoReactionIDs.push( '249042757954437122' ); arrDoReactionNames.push( 'dwarf' ); break;
-                case 'elf':case 'elve':case 'elven':
-                  arrDoReactionIDs.push( '249042861792690176' ); arrDoReactionNames.push( 'elf' ); break;
-                case 'hobbit':
-                  arrDoReactionIDs.push( '249042886740410369' ); arrDoReactionNames.push( 'hobbit' ); break;
-                case 'man':case 'human':
-                  arrDoReactionIDs.push( '249042932785479690' ); arrDoReactionNames.push( 'human' ); break;
-                case 'mithrilcoin':
-                  arrDoReactionIDs.push( '502489088507510804' ); arrDoReactionNames.push( 'Mithril_coin' ); break;
-                case 'lp':case 'lotropoint':
-                  arrDoReactionIDs.push( '510518319535882251' ); arrDoReactionNames.push( 'LP' ); break;
-                case 'ssg':
-                  arrDoReactionIDs.push( '510517453311180822' ); arrDoReactionNames.push( 'SSG_logo' ); break;
-                case 'twitch':
-                  arrDoReactionIDs.push( '364781668222894080' ); arrDoReactionNames.push( 'Twitch' ); break;
-                case 'youtube':
-                  arrDoReactionIDs.push( '364781557887795200' ); arrDoReactionNames.push( 'YouTube' ); break;
-                case 'lotrowiki':
-                  arrDoReactionIDs.push( '510515621944098848' ); arrDoReactionNames.push( 'lotrowiki' ); break;
-                case 'pie':
-                  arrDoReactionIDs.push( '510515687337230346' ); arrDoReactionNames.push( 'Pie' ); break;
-                case 'rip':
-                  arrDoReactionIDs.push( '474572596646510622' ); arrDoReactionNames.push( 'RIP' ); break;
-                case 'onering':
-                  arrDoReactionIDs.push( '510520724373635072' ); arrDoReactionNames.push( 'one_ring' ); break;
-                case 'salt':case 'salty':
-                  if ( isStaff ) { arrDoReactionIDs.push( '510633122501754898' ); arrDoReactionNames.push( 'salt~1' ); } break;
-  /*              case 'techniCal':
-                  arrDoReactionIDs.push( '575509342254792734' ); arrDoReactionNames.push( 'techniCal' ); break;//*/
-                case 'troll':case 'trolling':
-                  arrDoReactionIDs.push( '474576105215492117' ); arrDoReactionNames.push( 'trollololol' ); break;
-                default :
-                  console.warn( '%o: Received an unrecognized getReact to react to: %s', strNow(), getReact );
+          break;
+        case 'pvpban' :
+        case 'pvmpban' :
+          if ( message.channel.id === '389446825570074624' && ( isStaff || isMoorMaster ) ) {// #pvmp && @Staff || @Moor Masters
+            if ( arrArgs[ 0 ] !== undefined ) {
+              if ( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] ) {
+                let usrDick = message.guild.members.get( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] );
+              message.channel.overwritePermissions( usrDick, { SEND_MESSAGES: false, ADD_REACTIONS: false }, 'User was a dick and ' + message.author.tag + ' had me channel ban them.' ).catch( permError => { console.error( 'Error trying to overwritePermissions for %o: %o', usrDick.id, permError ); } );
+                usrDick.removeRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- User was a dick and ' + message.author.tag + ' had me remove this role.' ).then( roleRemoved => { jsonUsers[ member.id ].guilds[ guild.id ].roles = member.roles.keyArray(); saveNewUser = true; } ).catch( errRemRole => { console.error( '%s: Unable to remove role "MonsterPlayer" from %s: %o', strNow(), usrDick.user.tag, errRemRole ); } );
+                message.react( '248447317617803264' ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+                message.channel.fetchMessages( {
+                  limit: 100
+                } ).then( messages => {
+                  let arrMessages = messages.array();
+                  arrMessages = arrMessages.filter( thisMessage => thisMessage.author.id === usrDick.id );
+                  arrMessages.length = 100;
+                  arrMessages.map( thisMessage => thisMessage.delete().catch( errMap => { console.error( '%o: %o', strNow(), errMap ); } ) );
+                } );
+                message.channel.send( '<:banhammer:248447317617803264> ' + usrDick + ' has violated Wheaton\'s Law and may no longer speak. <:RIP:474572596646510622>' );
               }
+            }
+            else {
+              message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` missing a user.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+              message.channel.send( 'Sorry, ' + message.author + ', but you forgot to tell me who was a naughty.' );
+            }
+          }
+          else {
+            message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` in the wrong channel.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+            message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
+          }
+          break;
+        case 'pvpunban' :
+        case 'pvmpunban' :
+          if ( message.channel.id === '389446825570074624' && isStaff ) {// #pvmp && @Staff
+            if ( arrArgs[ 0 ] !== undefined ) {
+              if ( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] ) {
+                let usrBryn = message.guild.members.get( arrArgs[ 0 ].match( /<@!?(\d*)>/ )[ 1 ] );
+                message.channel.permissionOverwrites.get( usrBryn.id ).delete( { reason: 'User was forgiven and ' + message.author.tag + ' had me clear ban.' } ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+                usrBryn.addRole( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ), '- User was a forgiven and ' + message.author.tag + ' had me re-add this role.' );
+                message.react( '510515835673247776' ).catch( e => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + e ); } );
+                message.channel.send( '<:approved:510515835673247776> ' + usrBryn + ' has been forgiven and may speak yet again. <:approved:510515835673247776>' );
+              }
+            }
+            else {
+            message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` missing a user.' } ).catch( errDel => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + errDel ); } );
+            message.channel.send( 'Sorry, ' + message.author + ', but you forgot to tell me who was a forgiven.' );
+            }
+          }
+          else {
+            message.delete( { reason: 'Cleaning up a staffer\'s `!' + command + '` in the wrong channel.' } ).catch( errDel => { console.log( ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + errDel ); } );
+            message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
+          }
+          break;
+        case 'deactivate' :
+          message.react( objReactionEmoji.white_check_mark ).catch( errReact => { console.error( '%o: Failed to react to !deactivate request: %o', strNow(), errReact ); } );
+          sendDM( message, await message.client.users.get( settings[ bot ].owners[ 0 ] ), message.author + '#' + message.author.discriminator + ' (:id:' + message.author.id + ') "deactivated": ' + strArgs );
+          break;
+        case 'edit' :
+          if ( isOwner || isBotMod || isCrown || isAdmin || isSysop ) {
+            var guild, channel, thisMessage;
+            guild = message.client.guilds.find( guild => { if ( guild.id === message.guild.id ) { return guild; } } );
+            channel = guild.channels.find( chan => { if ( chan.id === message.channel.id ) { return chan; } } );
+            thisMessage = arrArgs[ 0 ];
+            var strNewMsg = arrArgs.slice( 1 ).join( ' ' );
+            channel.fetchMessage( thisMessage ).then( objMsg => {
+              objMsg.edit( strNewMsg ).then( edited => {
+                message.react( objReactionEmoji.white_check_mark ).then( r => {
+                  message.client.setTimeout( function(){
+                    message.delete().catch( errDel => { console.error( '%o: %o', strNow(), errDel ); } );
+                  }, 7500 );
+                } ).catch( errReact => { console.error( '%o: %o', strNow(), errReact ); } );
+              } ).catch( errEdit => { console.error( '%o: %o', strNow(), errEdit ); } );
             } );
-            if ( arrDoReactionIDs.length > 0 ) {
-              arrDoReactionIDs = arrDoReactionIDs.reverse();
-              arrDoReactionNames = arrDoReactionNames.reverse();
-              if ( isDebug ) { console.log( '%o: I will now attempt to react to the following fun reaction keywords in reverse order: %o (%o)', strNow(), arrDoReactionNames.length, arrDoReactionNames, arrDoReactionIDs ); }
-              do {
-                var doReactionID = await arrDoReactionIDs.pop(), doReactionName = await arrDoReactionNames.pop();
-                if ( isDebug ) { console.log( '%o: Adding reaction `:%s:` to:\n\thttps://discordapp.com/channels/%s/%s/%s', strNow(), doReactionName, message.guild.id, message.channel.id, message.id ); }
-                await message.react( doReactionID ).catch( errReact => {
-                  if ( errReact.code === 90001 ) {
-                    message.channel.send( 'You really should consider unblocking me, ' + message.author + '.  It\'s not nice to block me for no good reason. :angry:' );
-                    arrDoReactionIDs = [];
-                  } else if ( errReact.code === 10014 ) {
-                    console.error( '%o: Unable to react with unknown emoji of `:%s:` in %s.', strNow(), doReactionName, message.guild.name );
-                  } else if ( errReact.code === 10008 ) {
-                    console.error( '%o: Unable to react to unknown message with `:%s:` in %s.', strNow(), doReactionName, message.guild.name );
-                  } else {
-                    console.error( '%o: Unable to react with `:%s:` in %s: %o', strNow(), doReactionName, message.guild.name, errReact );
+          }
+          else {
+            message.react( objReactionEmoji.x ).then( r => {
+              message.client.setTimeout( function(){
+                message.delete().catch( errDel => { console.error( '%o: %o', strNow(), errDel ); } );
+              }, 2500 );
+            } ).catch( errReact => { console.error( '%o: %o', strNow(), errReact ); } );
+            message.author.send( 'I\'m sorry, ' + message.author.tag + ', but you can\'t edit my messages in the `' + message.guild.name + '` server.' )
+              .then( dm => {
+                message.react( objReactionEmoji.white_check_mark ).catch( errReact => { console.error( '%o: %o', strNow(), errReact ); } );
+              } ).catch( errDM => {
+                message.react( objReactionEmoji.x ).then( resReact => {
+                  message.reply( 'You\'ll need to accept DMs from members of this server in order to get a list of my commands DMed to you.' );
+                } ).catch( errReact => {
+                  message.channel.send( 'Can anyone tell ' + message.author + ' that they\'ll need to unblock me in order to get a list of my commands DMed to them. ^^ <@&201710935788748800>' );
+                  console.error( '%o: %o', strNow(), errReact );
+                } );
+                console.error( '%o: %o', strNow(), errDM );
+              } );
+          }
+          break;
+        case 'debug' :
+          var debugParameter;
+          if ( arrArgs[ 0 ] !== undefined ) {
+            debugParameter = arrArgs[ 0 ].trim().toLowerCase();
+          }
+          if ( arrArgs[ 0 ] !== undefined && debugParameter === 'state' ) {
+            if ( isDebug ) {
+             message.react( objReactionEmoji.one ).catch( e => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
+            } else {
+             message.react( objReactionEmoji.zero ).catch( e => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
+            }
+          }
+          else if ( isOwner ) {
+            var msgToggle, boolUpdateDebugMode = true;
+            var toggle = await toBoolean( debugParameter );
+            var strToggle = await ( toggle || ( toggle && !isDebug ) ? 'on' : 'off' );
+            msgToggle = await client.channels.get( settings[ bot ].debug[ 0 ] ).send( '_is attempting to turn ' + strToggle + ' debug mode for_ ' + message.author );
+            if ( ( isDebug && toggle ) || ( !isDebug && !toggle ) ) {
+              await msgToggle.edit( '_debug mode was already ' + strToggle + '_' );
+              await msgToggle.react( objReactionEmoji.person_facepalming ).catch( e => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
+              message.delete().catch( e => { console.log( 'Unable to delete ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + e ); } );
+              boolUpdateDebugMode = false;
+            } else if ( toggle ) {
+              isDebug = true;
+            } else if ( !toggle ) {
+              isDebug = false;
+            } else {
+              isDebug = !isDebug;
+            }
+            if ( boolUpdateDebugMode ) {
+              settings[ bot ].onError.isDebugMode = isDebug;
+              fs.readFile( fsSettings, 'utf8', ( errRead, fileData ) => {
+                if ( errRead ) { throw errRead; }
+                fileData = JSON.parse( fileData );
+                fileData[ bot ] = settings[ bot ];
+                var strSettings = JSON.stringify( fileData );
+                fs.writeFile( fsSettings, strSettings, ( errWrite ) => {
+                  if ( errWrite ) { throw errWrite; } else {
+                     if ( isDebug ) {
+                      msgToggle.edit( '_debug mode is now on_' );
+                      msgToggle.react( objReactionEmoji.one ).catch( errReact => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errReact ); } );
+                    } else {
+                      msgToggle.edit( '_debug mode is now off_' );
+                      msgToggle.react( objReactionEmoji.zero ).catch( errReact => { console.log( 'Unable to react to ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errReact ); } );
+                    }
+                    message.delete().catch( errDel => { console.log( 'Unable to delete ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errDel ); } );
                   }
                 } );
-                if ( isDebug ) { console.warn( '%o: %d reactions left in: %o', strNow(), arrDoReactionIDs.length, arrDoReactionIDs ); }
-              } while ( arrDoReactionIDs.length > 0 );
+              } );
             }
           }
-
-  /*        var arrFoundKeyWords = ( strArgs.match( /\b(quad ?pack)\b/gi ) || [] ) ;
-          if ( arrFoundKeyWords.length > 0 ) {
-            if ( isDebug ) { console.log( '%o: I found  %d fun keywords, [ "%s" ], in the string: %s', strNow(), arrFoundKeyWords.length, arrFoundKeyWords.join( '", "' ), strArgs ); }
-            var arrDoKeywords = [];
-            arrFoundKeyWords.forEach( async function( getKeyword ) {
-              getKeyword = getKeyword.toLowerCase().replace( /[^A-Za-z0-9]/g, '' ).replace( /s$/, '' );
+          client.user.setStatus( 'online' );
+          isBotIdle = false;
+          break;
+    /*    case 'encourage' :
+          if ( !isBot ) {
+            message.delete().then( async delTrigger => {
+              async function getEncouraged( intMsgID ) {
+                if ( intMsgID === undefined ) { intMsgID = await getRand( 1, 6 ); }
+                switch ( intMsgID ) {
+                  case 1 :
+                    return 'you\'re an idiot...'; break;
+                  case 2 :
+                    return 'I love you.  :heart:'; break;
+                  case 3 :
+                    return 'you\'re a super :star:'; break;
+                  case 4 :
+                    return 'you are awesome today!'; break;
+                  case 5 :
+                    return 'you\'re a silly goose...'; break;
+                  case 6 :
+                    return 'you\'re great.'; break;
+                  default :
+                    return 'I don\'t feel so good...';
+                }
+              }
+              let toEncourage = ( message.mentions.members.first() || message.author );
+              message.channel.send( toEncourage + ', ' + await getEncouraged() ).then( async msgSent => {
+                client.setTimeout( async function() {
+                  if ( message.channel.lastMessage !== msgSent ) {
+                    message.channel.send( toEncourage + ', ' + await getEncouraged() );
+                  }
+                }, ( await getRand( 12, 27 ) * 1000 ) );
+              } );
+            } ).catch( errDel => {
+              message.reply( 'I am unable to process your request.  Please ask ' + message.guild.owner.user.tag + ' to make sure I have the `MANAGE_MESSAGES` permission.  Thanks! :heart:' ).then( replySuccess => { replySuccess.edit( message.author + ', I am unable to process your request.  Please ask ' + message.guild.owner.user + ' to make sure I have the `MANAGE_MESSAGES` permission.  Thanks! :heart:' ) } );
+            } );
+          }
+          break;//*/
+        case 'dm' :
+          if ( isOwner || isBotMod || isCrown || isAdmin ) {
+            var strWhom;
+            strArgs = arrArgs.slice( 1 ).join( ' ' );
+            if ( arrArgs[ 0 ].toLowerCase() === 'all' && isOwner ) {
+              message.client.users.forEach( function ( user ) {
+                sendDM( message, user.user, strArgs );
+              } );
+              strWhom = 'everyone';
+            } else if ( arrArgs[ 0 ].toLowerCase() === 'server' ) {
+              message.guild.members.forEach( function ( user ) {
+                sendDM( message, user.user, strArgs );
+              } );
+              strWhom = 'everyone in ' + message.guild.name;/*
+            } else if ( message.mentions.roles.keyArray().length >= 1 ) {
+              message.guild.roles.get( message.mentions.roles.first().id ).members.forEach( function ( user ) {
+                sendDM( message, user.user, strArgs );
+              } );
+              strWhom = 'everyone with ' + message.guild.name + '\'s ' + message.guild.roles.get( message.mentions.roles.first().id ).name + ' role';//*/
+            } else {
+              var user = await message.client.fetchUser( arrArgs[ 0 ].match( /<@!?[\d]*>/g )[ 0 ].replace( /[<@!>]/g, '' ) );
+              sendDM( message, user, strArgs );
+              strWhom = user.tag;
             }
-              do {
-            
-              } while ( arrDoKeywords.length > 0 );
-          }//*/
+          }
+          else {
+            message.channel.send( 'I\'m sorry, ' + message.author + ', you don\'t have the authority to use that command.' );
+          }
+          message.delete( { reason: 'Cleaning up ' + message.author + '\'s request to DM `' +  + '` to ' + strWhom + '.' } );
+          break;
+        case 'report' :
+          if ( message.guild.id === '464630580810612756' ) {
+            message.guild.channels.get( '482699262350721046' ).send( message.author + '**#' + message.author.discriminator + '** reported in <#' + message.channel.id + '>: ' + strArgs );
+            message.delete();
+          }
+          break;
+        case 'about' :
+        case 'account' :
+        case 'config' :
+        case 'define' :
+        case 'disable' :
+        case 'enable' :
+        case 'eval' :
+        case 'groups' :
+        case 'install' :
+        case 'inviteme' :
+        case 'kinships' :
+        case 'load' :
+    //    case 'log' :
+        case 'logs' :
+        case 'lsregister' :
+        case 'mordor' :
+        case 'noserver' :
+        case 'n00b' :
+        case 'ping' :
+        case 'prefix' :
+    //    case 'prune' :
+        case 'reload' :
+        case 'roll' :
+        case 'say' :
+        case 'server' :
+        case 'unload' :
+          if ( isDebug ) {
+            client.channels.get( settings[ bot ].debug[ 0 ] ).send( 'is processing a `!' + command + '` command.' );
+          }
+          client.user.setStatus( 'online' );
+          isBotIdle = false;
+          break;
+        default : 
+          /* Do nothing */
+          var objReactionBlacklist = [ '700808423692042382' ];
+          if ( message.author.id !== message.client.user.id && objReactionBlacklist.indexOf( message.guild.id ) === -1 ) {
+            var arrFoundReacts = ( strArgs.match( /\b(Smeagol|beornings?|captains?|champions?|burglars?|guardians?|hunters?|lore[ \-]?masters?|minstrels?|rune[ \-]?keepers?|wardens?|dwar(f|ve(n|s))|el(f|ve(n|s))|hobbits?|(hu)?mans?|mithril[ \-]?coins?|l(?:otro )?p(?:oint)?s?|ssg|twitch|youtube|lotro-?wiki|pie|rip|the( one( true)?)? ring|troll(?:(ol)*|ing|s)?|(ShoeMaker|Technical_13)|salt(y)?)\b/gi ) || [] );
+            if ( arrFoundReacts.length > 0 ) {
+              if ( isDebug ) { console.log( '%o: I found  %d fun reaction keywords, [ "%s" ], in the string: %s', strNow(), arrFoundReacts.length, arrFoundReacts.join( '", "' ), strArgs ); }
+              var arrDoReactionIDs = [], arrDoReactionNames = [];
+              arrFoundReacts.forEach( async function( getReact ) {
+                getReact = getReact.toLowerCase().replace( /[^A-Za-z0-9]/g, '' ).replace( /s$/, '' );
+                getReact = ( getReact.indexOf( 'trollol' ) !== -1 ? 'troll' : getReact );
+                getReact = ( getReact.indexOf( 'ring' ) !== -1 ? 'onering' : getReact );
+                getReact = ( getReact.indexOf( 'shoemaker' ) !== -1 || getReact.indexOf( 'technical_13' ) !== -1 ? 'techniCal' : getReact );
+                switch ( getReact ) {
+                  case 'smeagol':
+                    arrDoReactionIDs.push( '510515649085308929' ); arrDoReactionNames.push( 'Smeagol' ); break;
+                  case 'beorning':
+                    arrDoReactionIDs.push( '237646627521691648' ); arrDoReactionNames.push( 'beorning' ); break;
+                  case 'captain':
+                    arrDoReactionIDs.push( '237647949927022593' ); arrDoReactionNames.push( 'captain' ); break;
+                  case 'champion':
+                    arrDoReactionIDs.push( '237647952577822720' ); arrDoReactionNames.push( 'champion' ); break;
+                  case 'burglar':
+                    arrDoReactionIDs.push( '237647950124154892' ); arrDoReactionNames.push( 'burglar' ); break;
+                  case 'guardian':
+                    arrDoReactionIDs.push( '237647981728235520' ); arrDoReactionNames.push( 'guardian' ); break;
+                  case 'hunter':
+                    arrDoReactionIDs.push( '237648076880347146' ); arrDoReactionNames.push( 'hunter' ); break;
+                  case 'loremaster':
+                    arrDoReactionIDs.push( '237648082228084736' ); arrDoReactionNames.push( 'loremaster' ); break;
+                  case 'minstrel':
+                    arrDoReactionIDs.push( '237648098493595651' ); arrDoReactionNames.push( 'minstrel' ); break;
+                  case 'runekeeper':
+                    arrDoReactionIDs.push( '237648127891341312' ); arrDoReactionNames.push( 'runekeeper' ); break;
+                  case 'warden':
+                    arrDoReactionIDs.push( '237648209286135811' ); arrDoReactionNames.push( 'warden' ); break;
+                  case 'dwarf':case 'dwarve':case 'dwarven':
+                    arrDoReactionIDs.push( '249042757954437122' ); arrDoReactionNames.push( 'dwarf' ); break;
+                  case 'elf':case 'elve':case 'elven':
+                    arrDoReactionIDs.push( '249042861792690176' ); arrDoReactionNames.push( 'elf' ); break;
+                  case 'hobbit':
+                    arrDoReactionIDs.push( '249042886740410369' ); arrDoReactionNames.push( 'hobbit' ); break;
+                  case 'man':case 'human':
+                    arrDoReactionIDs.push( '249042932785479690' ); arrDoReactionNames.push( 'human' ); break;
+                  case 'mithrilcoin':
+                    arrDoReactionIDs.push( '502489088507510804' ); arrDoReactionNames.push( 'Mithril_coin' ); break;
+                  case 'lp':case 'lotropoint':
+                    arrDoReactionIDs.push( '510518319535882251' ); arrDoReactionNames.push( 'LP' ); break;
+                  case 'ssg':
+                    arrDoReactionIDs.push( '510517453311180822' ); arrDoReactionNames.push( 'SSG_logo' ); break;
+                  case 'twitch':
+                    arrDoReactionIDs.push( '364781668222894080' ); arrDoReactionNames.push( 'Twitch' ); break;
+                  case 'youtube':
+                    arrDoReactionIDs.push( '364781557887795200' ); arrDoReactionNames.push( 'YouTube' ); break;
+                  case 'lotrowiki':
+                    arrDoReactionIDs.push( '510515621944098848' ); arrDoReactionNames.push( 'lotrowiki' ); break;
+                  case 'pie':
+                    arrDoReactionIDs.push( '510515687337230346' ); arrDoReactionNames.push( 'Pie' ); break;
+                  case 'rip':
+                    arrDoReactionIDs.push( '474572596646510622' ); arrDoReactionNames.push( 'RIP' ); break;
+                  case 'onering':
+                    arrDoReactionIDs.push( '510520724373635072' ); arrDoReactionNames.push( 'one_ring' ); break;
+                  case 'salt':case 'salty':
+                    if ( isStaff ) { arrDoReactionIDs.push( '510633122501754898' ); arrDoReactionNames.push( 'salt~1' ); } break;
+                  case 'troll':case 'trolling':
+                    arrDoReactionIDs.push( '474576105215492117' ); arrDoReactionNames.push( 'trollololol' ); break;
+                  default :
+                    console.warn( '%o: Received an unrecognized getReact to react to: %s', strNow(), getReact );
+                }
+              } );
+              if ( arrDoReactionIDs.length > 0 ) {
+                arrDoReactionIDs = arrDoReactionIDs.reverse();
+                arrDoReactionNames = arrDoReactionNames.reverse();
+                if ( isDebug ) { console.log( '%o: I will now attempt to react to the following fun reaction keywords in reverse order: %o (%o)', strNow(), arrDoReactionNames.length, arrDoReactionNames, arrDoReactionIDs ); }
+                do {
+                  var doReactionID = await arrDoReactionIDs.pop(), doReactionName = await arrDoReactionNames.pop();
+                  if ( isDebug ) { console.log( '%o: Adding reaction `:%s:` to:\n\thttps://discordapp.com/channels/%s/%s/%s', strNow(), doReactionName, message.guild.id, message.channel.id, message.id ); }
+                  await message.react( doReactionID ).catch( errReact => {
+                    if ( errReact.code === 90001 ) {
+                      message.channel.send( 'You really should consider unblocking me, ' + message.author + '.  It\'s not nice to block me for no good reason. :angry:' );
+                      arrDoReactionIDs = [];
+                    } else if ( errReact.code === 10014 ) {
+                      console.error( '%o: Unable to react with unknown emoji of `:%s:` in %s.', strNow(), doReactionName, message.guild.name );
+                    } else if ( errReact.code === 10008 ) {
+                      console.error( '%o: Unable to react to unknown message with `:%s:` in %s.', strNow(), doReactionName, message.guild.name );
+                    } else {
+                      console.error( '%o: Unable to react with `:%s:` in %s: %o', strNow(), doReactionName, message.guild.name, errReact );
+                    }
+                  } );
+                  if ( isDebug ) { console.warn( '%o: %d reactions left in: %o', strNow(), arrDoReactionIDs.length, arrDoReactionIDs ); }
+                } while ( arrDoReactionIDs.length > 0 );
+              }
+            }
+        }
       }
     }
     if ( saveNewUser && guild !== null ) {
@@ -2490,7 +2619,7 @@ client.on( 'message', async ( message ) => {// Regular messages
         if ( errWrite ) {
           client.guilds.get( '201024322444197888' ).channels.get( '235896771547627521' ).send( strNow() + ': Failed to save "new user" on guild join.' );
           throw errWrite;
-        } else { console.log( '%o: Successfully saved %s on processAutoRoles( %s ).', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ), member.id ); }
+        } else { console.log( '%o: Successfully saved %s on message.', strNow(), ( jsonUsers[ member.id ].guilds[ guild.id ].ntag || member.user.tag ) ); }
       } );
     }
   }
@@ -2553,6 +2682,12 @@ client.on( 'message', async ( message ) => {// TEST SECTION
     }
     
     switch ( command ) {
+      case 'dc' :
+        if ( isOwner ) {
+          var defaultChannelIs = await getDefaultChannel( message.guild.id );
+          console.log( 'The default channel for %o is: %o', message.guild.name, defaultChannelIs );
+        }
+        break;
       case 'hooker':
         if ( isOwner || isBotMod ) {
           message.delete();
@@ -2643,6 +2778,31 @@ client.on( 'message', async ( message ) => {// TEST SECTION
           message.channel.send( '`Nitro Booster` role ID: ' + guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ).id );
         }
         break;
+      case 'redact' :
+        if ( isOwner || isBotMod || isStaff ) {
+          if ( !arrArgs[ 0 ] || isNaN( arrArgs[ 0 ].replace( /(<@!?|>)/g, '' ) ) ) {
+            var msgReply = await message.reply( 'I need a mention or user ID to perform this action.  Please try again with `!redact @user`.' );
+            msgReply.delete( 30000 ).catch( errDel => { console.error( '%o: Unable to delete no ID/NaNid `!redact` message: %o', strNow(), userID, errDel ); } );
+          }
+          else {
+            var userID = arrArgs[ 0 ].replace( /(<@!?|>)/g, '' );
+            guild.fetchMember( userID )
+              .then( redactUser => { message.reply( '`' + ( redactUser.nickname || redactUser.user.username ) + '`\'s nickname was' + ( redactNick( redactUser, 'nickname' ) ? ' ' : ' *not* ' ) + '<@' + userID + '>.' ); } )
+              .catch( async errFetchMbr => {
+                var msgReply = await message.reply( 'I need a mention or user ID to perform this action.  Please try again with `!redact @user`.' );
+                msgReply.delete( 30000 ).catch( errDel => { console.error( '%o: Unable to delete invalid ID `!redact` message: %o', strNow(), userID, errDel ); } );
+                if ( errFetchMbr.message !== 'Invalid or uncached id provided.' ) {
+                  console.error( '%o: Unable to fetch <@%s> to `!redact`: %o', strNow(), userID, errFetchMbr.message );
+                }
+              } );
+          }
+          message.delete( 15000 ).catch( errDel => { console.error( '%o: Unable to delete `!redact <@%o>` message: %o', strNow(), userID, errDel ); } );
+        } else {
+            var msgReply = await message.reply( 'you don\'t have the permissions to perform this action!' );
+            msgReply.delete( 30000 ).catch( errDel => { console.error( '%o: Unable to delete no permission `!redact` message: %o', strNow(), userID, errDel ); } );
+            message.delete( 15000 ).catch( errDel => { console.error( '%o: Unable to delete `!redact <@%o>` message: %o', strNow(), userID, errDel ); } );
+        }
+        break;
     }
   }
 } );
@@ -2658,11 +2818,11 @@ client.on( 'message', async ( message ) => {// Glorious XP!
     var sysopRole = false, modRole = false, staffRole = false;
     var isMoorMaster = false, isMonsterPlayer = false, isTroll = false, isEveryone = false;
     var canManage = false, canInvite = false;
-    var thisUser = jsonUsers[ message.author.id ]
+    var thisUser = jsonUsers[ message.author.id ];// Default to new user if not exist
     var thisGuild = null;
     if ( message.guild ) {
       guild = message.guild;
-      thisGuild = thisUser.guilds[ guild.id ];
+      thisGuild = thisUser.guilds[ guild.id ];// Add user to guild if not exist
       var member = guild.members.get( message.author.id );
       isCrown = ( message.author.id === guild.owner.user.id ? true : false );
       isAdmin = false;
@@ -2851,55 +3011,52 @@ client.on( 'message', async ( message ) => {// Glorious XP!
           } else { console.log( '%o: Successfully saved %s (ID: %s) to jsonUsers on message (Glorious XP!).', strNow(), thisUser.tag, message.author.id ); }
         } );
       }
-    }
-    var everyoneExcludedChans = [
-      '325399391223414786',// #glamband
-      '510592301479755786'// #deleted-channel
-    ];
-    if ( guild.id === '201024322444197888' && ( isTroll || isEveryone ) && everyoneExcludedChans.indexOf( message.channel.id ) === -1 ) {
-      var isSpoiler = false;
-      var intAttachments = message.attachments.size;
-      var msgContent = ':link: [Posted]( <https://discordapp.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '> ) in <#' + message.channel.id + '> by ' + message.author + ':\n';
-      var objAttachments = { files: [] };
-      var trollMsg = undefined;
-      if ( intAttachments >= 1 ) {
-        Array.from( message.attachments ).forEach( thisAttachment => {
-          var thisImageURL = thisAttachment[ 1 ].proxyURL;
-          isSpoiler = ( thisAttachment[ 1 ].filename.substr( 0, 8 ) === 'SPOILER_' ? true : false );
-          var thisFilename = ( isSpoiler ? thisAttachment[ 1 ].filename.substr( 8 ) : thisAttachment[ 1 ].filename );
-          var intFileSize = parseInt( thisAttachment[ 1 ].filesize );
-          if ( intFileSize <= 5242880 ) {
-            objAttachments.files.push( { attachment: thisImageURL, name: thisFilename } );
-          } else { msgContent += '\n' + ( isSpoiler ? ':goggles:' : ':link:' ) + ' ' + thisImageURL; }
-        } );
-        trollMsg = await guild.channels.get( '708657524617904139' )
-          .send( msgContent, objAttachments )
-          .catch( errSend => { console.error( '%o: Failed to report that @%s posted in %s#%s: %s\nError: %o', strNow(), thisGuild.ntag, guild.name, message.channel.name, message.content, errSend ); } );
-        if ( trollMsg && isSpoiler ) {
-          trollMsg.react( objReactionEmoji.goggles )
-            .catch( errReact => { console.error( '%o: Failed to react with :goggles: to troll msg with spoiler img: %o', strNow(), errReact ); } );
-        }
-      }/**/if(!trollMsg){//*/
-      msgContent += message.content;
-      var msgUser = message.author;
-      var msgMember = await message.guild.fetchMember( msgUser.id );
-      var msgWebhook = new Discord.RichEmbed()
-        .setThumbnail( msgUser.avatarURL )
-        .setColor( msgMember.displayHexColor || '#000000' )
-        .setDescription( msgContent );
-      guild.channels.get( '708657524617904139' ).createWebhook( ( msgMember.nickname || msgUser.username ), msgUser.avatarURL )
-        .then( async webhook => {
-          await webhook.send( '', {
-            'username': ( msgMember.nickname || msgUser.username ),
-            'avatarURL': msgUser.avatarURL,
-            'embeds': [ msgWebhook ]
-          } )
-          .catch( errSend => {
-            console.error( '%o: trollMsg webhook failed to send: %o', strNow(), errSend );
-            return guild.channels.get( '253534754350170112' ).send( '**Have <@440752068509040660> check the console, something went wrong with the trollMsg webhook.**' );
+      var everyoneExcludedChans = [ '325399391223414786', '510592301479755786' ];// #glamband, #deleted-channel
+      if ( guild.id === '201024322444197888' && ( isTroll || isEveryone ) && everyoneExcludedChans.indexOf( message.channel.id ) === -1 ) {
+        var isSpoiler = false;
+        var intAttachments = message.attachments.size;
+        var msgContent = ':link: [Posted]( <https://discordapp.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '> ) in <#' + message.channel.id + '> by ' + message.author + ':\n';
+        var objAttachments = { files: [] };
+        var trollMsg = undefined;
+        if ( intAttachments >= 1 ) {
+          Array.from( message.attachments ).forEach( thisAttachment => {
+            var thisImageURL = thisAttachment[ 1 ].proxyURL;
+            isSpoiler = ( thisAttachment[ 1 ].filename.substr( 0, 8 ) === 'SPOILER_' ? true : false );
+            var thisFilename = ( isSpoiler ? thisAttachment[ 1 ].filename.substr( 8 ) : thisAttachment[ 1 ].filename );
+            var intFileSize = parseInt( thisAttachment[ 1 ].filesize );
+            if ( intFileSize <= 5242880 ) {
+              objAttachments.files.push( { attachment: thisImageURL, name: thisFilename } );
+            } else { msgContent += '\n' + ( isSpoiler ? ':goggles:' : ':link:' ) + ' ' + thisImageURL; }
           } );
-          webhook.delete();
-        } );/**/}//*/
+          trollMsg = await guild.channels.get( '708657524617904139' )
+            .send( msgContent, objAttachments )
+            .catch( errSend => { console.error( '%o: Failed to report that @%s posted in %s#%s: %s\nError: %o', strNow(), thisGuild.ntag, guild.name, message.channel.name, message.content, errSend ); } );
+          if ( trollMsg && isSpoiler ) {
+            trollMsg.react( objReactionEmoji.goggles )
+              .catch( errReact => { console.error( '%o: Failed to react with :goggles: to troll msg with spoiler img: %o', strNow(), errReact ); } );
+          }
+        }/**/if(!trollMsg){//*/
+        msgContent += message.content;
+        var msgUser = message.author;
+        var msgMember = await message.guild.fetchMember( msgUser.id );
+        var msgWebhook = new Discord.RichEmbed()
+          .setThumbnail( msgUser.avatarURL )
+          .setColor( msgMember.displayHexColor || '#000000' )
+          .setDescription( msgContent );
+        guild.channels.get( '708657524617904139' ).createWebhook( ( msgMember.nickname || msgUser.username ), msgUser.avatarURL )
+          .then( async webhook => {
+            await webhook.send( '', {
+              'username': ( msgMember.nickname || msgUser.username ),
+              'avatarURL': msgUser.avatarURL,
+              'embeds': [ msgWebhook ]
+            } )
+            .catch( errSend => {
+              console.error( '%o: trollMsg webhook failed to send: %o', strNow(), errSend );
+              return guild.channels.get( '253534754350170112' ).send( '**Have <@440752068509040660> check the console, something went wrong with the trollMsg webhook.**' );
+            } );
+            webhook.delete();
+          } );/**/}//*/
+      }
     }
   }
 } );//*/

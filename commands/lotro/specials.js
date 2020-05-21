@@ -12,7 +12,8 @@ const fsSpecials = bot + '/specials.json';
 const today = ( new Date() ).setHours( 0, 0, 0, 0 );
 var strNow = function () { return ( new Date() ).toLocaleDateString( 'en-us', objTimeString ) };
 var settings = require( path.join( __dirname, '../../../' + fsSettings ) );
-var objSpecials = require( path.join( __dirname, '../../../' + fsSpecials ) );
+const rawSpecials = path.join( __dirname, '../../../' + fsSpecials );
+var objSpecials = require( rawSpecials );
 const unirest = require( 'unirest' );
 const strNewSpecialsFilePath = path.join( __dirname, '../../jsonSpecials/' );
 var objUpdated = settings[ bot ].specials.updated;
@@ -151,9 +152,7 @@ class Specials extends commando.Command {
       case 'GET' :
         switch ( strElement ) {
           case 'OBJECT' :
-            if ( JSON.stringify( objSpecials ).length > 1979 ) {
-              message.reply( 'Sorry - the ability to return the json as a file due to length being too big is a work in progress, and you do not yet have access.' );
-            } else {
+            if ( JSON.stringify( objSpecials ).length <= 1979 ) {
               if ( ( isOwner || isBotMod ) && arrParameters[ 0 ] === 'HERE' ) {
                 message.channel.send( '```json\n' + JSON.stringify( objSpecials ) + '\n```' );
                 message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
@@ -161,7 +160,12 @@ class Specials extends commando.Command {
                 message.author.send( '```json\n' + JSON.stringify( objSpecials ) + '\n```' );
                 message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
               }
+              break;
+            } else {
+              message.reply( 'Sorry - the ability to return the json as a file due to length being too big is a work in progress, and you do not yet have access.' );
             }
+          case 'FILE' :
+            message.channel.send( 'Attached is the current specials.json file: ', { files: [ { attachment: rawSpecials, name: 'mySpecial.json' } ] } );
             break;
           default :
             message.reply( 'Sorry - I can\'t complete that action yet.' );

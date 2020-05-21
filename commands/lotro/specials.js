@@ -1,8 +1,8 @@
+const bot = 'LOTRObot';
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
 const fs = require( 'fs' );
-const bot = 'LOTRObot';
 const objTimeString = {
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
@@ -62,7 +62,7 @@ async function setSpecials( message, strNewSpecials ) {
     // Show what it will look like now that it's updated
     strUpdaters = ( objUpdated.setAuthorID === objUpdated.conAuthorID ? objUpdated.setAuthorName : objUpdated.setAuthorName + ' & ' + objUpdated.conAuthorName );
     var msgEmbed = new Discord.RichEmbed()
-      .setTitle( 'Specials for the week!' )
+      .setTitle( 'The LOTRO Beacon™' + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
       .setURL( objSpecials.URI )
       .setColor( '#234290' )
       .setImage( objSpecials.image || strDefaultImage )
@@ -100,7 +100,7 @@ class Specials extends commando.Command {
   constructor( client ) {
     super( client, {
       name: 'specials',
-      group: 'lotro',
+      group: bot.toLowerCase().replace( 'bot', '' ),
       memberName: 'specials',
       description: 'What\'s hot this week!',
       aliases: [ 'bonusdays', 'coupon', 'freebie', 'sales', 'special' ]
@@ -151,14 +151,14 @@ class Specials extends commando.Command {
       case 'GET' :
         switch ( strElement ) {
           case 'OBJECT' :
-            if ( JSON.stringify( objSpecials ).length > 2000 ) {
+            if ( JSON.stringify( objSpecials ).length > 1979 ) {
               message.reply( 'Sorry - the ability to return the json as a file due to length being too big is a work in progress, and you do not yet have access.' );
             } else {
               if ( ( isOwner || isBotMod ) && arrParameters[ 0 ] === 'HERE' ) {
-                message.channel.send( '`' + JSON.stringify( objSpecials ) + '`' );
+                message.channel.send( '```json\n' + JSON.stringify( objSpecials ) + '\n```' );
                 message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
               } else {
-                message.author.send( '`' + JSON.stringify( objSpecials ) + '`' );
+                message.author.send( '```json\n' + JSON.stringify( objSpecials ) + '\n```' );
                 message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
               }
             }
@@ -171,7 +171,7 @@ class Specials extends commando.Command {
       case 'SET' :
         if ( isOwner || isBotMod ) {
           switch ( strElement ) {
-            case 'ATTACHED' :
+            case 'ATTACH' : case 'ATTACHED' :
             case 'OBJECT' :
               var strNewSpecials;
               var updateFailed = false;
@@ -288,7 +288,7 @@ class Specials extends commando.Command {
       default :
         strUpdaters = ( objUpdated.setAuthorID === objUpdated.conAuthorID ? objUpdated.setAuthorName : objUpdated.setAuthorName + ' & ' + objUpdated.conAuthorName );
         var msgEmbed = new Discord.RichEmbed()
-          .setTitle( 'Specials for the week!' )
+      .setTitle( 'The LOTRO Beacon™' + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
           .setURL( objSpecials.URI )
           .setColor( '#234290' )
           .setImage( objSpecials.image || strDefaultImage )

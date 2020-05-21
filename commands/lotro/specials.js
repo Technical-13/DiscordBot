@@ -1,4 +1,6 @@
 const bot = 'LOTRObot';
+const strDefaultImage = 'http://www.lotro.com/sites/all/themes/lotro_default/images/logo-lotro-en.png';
+const strPeriodicalName = 'The LOTRO Beacon™';
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
@@ -17,7 +19,6 @@ var objSpecials = require( rawSpecials );
 const unirest = require( 'unirest' );
 const strNewSpecialsFilePath = path.join( __dirname, '../../jsonSpecials/' );
 var objUpdated = settings[ bot ].specials.updated;
-const strDefaultImage = 'http://www.lotro.com/sites/all/themes/lotro_default/images/logo-lotro-en.png';
   
 function remove( msgCollect, msgBot, objRemoveOptions ) {
   var boolOnly = false,
@@ -63,7 +64,7 @@ async function setSpecials( message, strNewSpecials ) {
     // Show what it will look like now that it's updated
     strUpdaters = ( objUpdated.setAuthorID === objUpdated.conAuthorID ? objUpdated.setAuthorName : objUpdated.setAuthorName + ' & ' + objUpdated.conAuthorName );
     var msgEmbed = new Discord.RichEmbed()
-      .setTitle( 'The LOTRO Beacon™' + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
+      .setTitle( strPeriodicalName + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
       .setURL( objSpecials.URI )
       .setColor( '#234290' )
       .setImage( objSpecials.image || strDefaultImage )
@@ -139,17 +140,8 @@ class Specials extends commando.Command {
     }
     
     switch ( strCommand ) {
-      case 'ADD' :
-        if ( isOwner ) {
-          message.reply( 'Sorry - this function is not yet ready for testing.' );
-        } else { message.reply( 'Sorry - this function is a work in progress, and you do not yet have access.' ); }
-        break;
-      case 'EDIT' :
-        if ( isOwner ) {
-          message.reply( 'Sorry - this function is not yet ready for testing.' );
-        } else { message.reply( 'Sorry - this function is a work in progress, and you do not yet have access.' ); }
-        break;
       case 'GET' :
+        message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
         switch ( strElement ) {
           case 'OBJECT' :
             if ( JSON.stringify( objSpecials ).length <= 1979 ) {
@@ -161,8 +153,6 @@ class Specials extends commando.Command {
                 message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
               }
               break;
-            } else {
-              message.reply( 'Sorry - the ability to return the json as a file due to length being too big is a work in progress, and you do not yet have access.' );
             }
           case 'FILE' :
             message.channel.send( 'Attached is the current specials.json file: ', { files: [ { attachment: rawSpecials, name: 'mySpecial.json' } ] } );
@@ -278,10 +268,12 @@ class Specials extends commando.Command {
                 var strSettings = JSON.stringify( fileData );
                 fs.writeFile( '../' + fsSettings, strSettings, ( errWrite ) => { if ( errWrite ) { throw errWrite; } } );
               } );
+              message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
               break;
             default :
               message.reply( 'Sorry - I can\'t complete that action yet.' );
               message.react( '%E2%9D%8C' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
+              message.delete( 30000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
           }
         }
         else {
@@ -290,9 +282,10 @@ class Specials extends commando.Command {
         break;
       case 'NONE' :
       default :
+        message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
         strUpdaters = ( objUpdated.setAuthorID === objUpdated.conAuthorID ? objUpdated.setAuthorName : objUpdated.setAuthorName + ' & ' + objUpdated.conAuthorName );
         var msgEmbed = new Discord.RichEmbed()
-      .setTitle( 'The LOTRO Beacon™' + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
+      .setTitle( strPeriodicalName + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
           .setURL( objSpecials.URI )
           .setColor( '#234290' )
           .setImage( objSpecials.image || strDefaultImage )
@@ -327,7 +320,6 @@ class Specials extends commando.Command {
           } );
         }
     }
-    message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
   }
 }
 

@@ -1161,7 +1161,7 @@ client.on( 'guildMemberAdd', async ( member ) => {
     client.guilds.get( '201024322444197888' ).channels.get( '235896771547627521' ).send( 'Added guild to user in jsonUsers:\n```JSON\n' + JSON.stringify( jsonUsers[ member.id ] ) + '\n```' );
   }
   else {// Restore roles for returning member
-    var nitroID = ( await guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ).id || null );
+    var nitroID = ( guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ) ? guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ).id : null );
     if ( jsonUsers[ member.id ].guilds[ guildID ].roles.indexOf ( guildID ) !== -1 ) {
       jsonUsers[ member.id ].guilds[ guildID ].roles.splice( jsonUsers[ member.id ].guilds[ guildID ].roles.indexOf ( guildID ), 1 );
     }
@@ -1175,7 +1175,9 @@ client.on( 'guildMemberAdd', async ( member ) => {
         console.error( '%o: Unable to restore roles for %s in %s on rejoin: %o', strNow(), jsonUsers[ member.id ].guilds[ guildID ].ntag, guild.name, '<@&' + jsonUsers[ member.id ].guilds[ guildID ].roles.join( '>, <@&' ) + '>' );
       } )
       .catch( errAddRoles => {
-        guild.channels.get( strLogChan[ guildID ].logChan.id ).send( ':no_entry_sign: I was unable to restore ' + jsonUsers[ member.id ].guilds[ guildID ].roles.length + ' roles for ' + member + ' on rejoin:\n<@&' + jsonUsers[ member.id ].guilds[ guildID ].roles.join( '>, <@&' ) + '>' ).catch( errSend => { console.error( '%o: Unable to notify %s that I was unable to restore %o roles for %s on rejoin.', strNow(), jsonUsers[ member.id ].guilds[ guildID ].roles.length, guild.name, jsonUsers[ member.id ].guilds[ guildID ].ntag ); } );
+        try {
+          guild.channels.get( strLogChan[ guildID ].logChan.id ).send( ':no_entry_sign: I was unable to restore ' + jsonUsers[ member.id ].guilds[ guildID ].roles.length + ' roles for ' + member + ' on rejoin:\n<@&' + jsonUsers[ member.id ].guilds[ guildID ].roles.join( '>, <@&' ) + '>' ).catch( errSend => { console.error( '%o: Unable to notify %s that I was unable to restore %o roles for %s on rejoin.', strNow(), jsonUsers[ member.id ].guilds[ guildID ].roles.length, guild.name, jsonUsers[ member.id ].guilds[ guildID ].ntag ); } );
+        } catch ( errSendLog ) { console.error( '%o: Unable to send message to log channel for "%s" (ID:%s): %o', strNow(), guild.name, guildID, errSendLog ); }
         console.error( '%o: Unable to restore %o roles for %s in %s on rejoin: %o', strNow(), jsonUsers[ member.id ].guilds[ guildID ].roles.length, jsonUsers[ member.id ].guilds[ guildID ].ntag, guild.name, '<@&' + jsonUsers[ member.id ].guilds[ guildID ].roles.join( '>, <@&' ) + '>' );
       } );
   }
@@ -2205,7 +2207,7 @@ client.on( 'message', async ( message ) => {// Regular messages
             message.delete().catch( errDel => { console.error( '%o: Unable to delete !%s request by %s: %o', strNow(), command, message.author.tag, errDel ); } );
           }
           break;
-        case 'apvmp' :// Change the #pvmp password to speak.
+        case 'apvp' : case 'apvmp' :// Change the #pvmp password to speak.
           if ( isOwner || isBotMod || isCrown || isAdmin || isSysop || isMod ) {
             if ( arrArgs[ 0 ] !== undefined ) {
               strAcceptRules = arrArgs[ 0 ];
@@ -2325,10 +2327,14 @@ client.on( 'message', async ( message ) => {// Regular messages
           break;
         case 'edit' :
           if ( isOwner || isBotMod || isCrown || isAdmin || isSysop ) {
-            var guild, channel, thisMessage;
-            guild = message.client.guilds.find( guild => { if ( guild.id === message.guild.id ) { return guild; } } );
-            channel = guild.channels.find( chan => { if ( chan.id === message.channel.id ) { return chan; } } );
-            thisMessage = arrArgs[ 0 ];
+            var channel = message.channel;
+            if ( message.mentions.channels.size >= 1 ) {
+              channel = message.mentions.channels.array()[ 0 ];
+              strArgs = arrArgs.join( ' ' ).replace( '<#' + channel.id + '>', '' ).trim();
+              arrArgs = strArgs.split( ' ' );
+            }
+            var guild = channel.guild;
+            var thisMessage = arrArgs[ 0 ];
             var strNewMsg = arrArgs.slice( 1 ).join( ' ' );
             channel.fetchMessage( thisMessage ).then( objMsg => {
               objMsg.edit( strNewMsg ).then( edited => {
@@ -2521,7 +2527,7 @@ client.on( 'message', async ( message ) => {// Regular messages
           /* Do nothing */
           var objReactionBlacklist = [ '700808423692042382' ];
           if ( message.author.id !== message.client.user.id && objReactionBlacklist.indexOf( message.guild.id ) === -1 ) {
-            var arrFoundReacts = ( strArgs.match( /\b(Smeagol|beornings?|captains?|champions?|burglars?|guardians?|hunters?|lore[ \-]?masters?|minstrels?|rune[ \-]?keepers?|wardens?|dwar(f|ve(n|s))|el(f|ve(n|s))|hobbits?|(hu)?mans?|mithril[ \-]?coins?|l(?:otro )?p(?:oint)?s?|ssg|twitch|youtube|lotro-?wiki|pie|rip|the( one( true)?)? ring|troll(?:(ol)*|ing|s)?|(ShoeMaker|Technical_13)|salt(y)?)\b/gi ) || [] );
+            var arrFoundReacts = ( strArgs.match( /\b(Smeagol|beornings?|captains?|champions?|burglars?|guardians?|hunters?|lore[ \-]?masters?|minstrels?|rune[ \-]?keepers?|wardens?|dwar(f|ve(n|s))|el(f|ve(n|s))|hobbits?|(hu)?mans?|mithril[ \-]?coins?|l(?:otro )?p(?:oint)?s?|ssg|twitch|youtube|lotro-?wiki|pie|rip|the( one( true)?)? ring|troll(?:(ol)*|ing|s)?|salt(y)?)\b/gi ) || [] );
             if ( arrFoundReacts.length > 0 ) {
               if ( isDebug ) { console.log( '%o: I found  %d fun reaction keywords, [ "%s" ], in the string: %s', strNow(), arrFoundReacts.length, arrFoundReacts.join( '", "' ), strArgs ); }
               var arrDoReactionIDs = [], arrDoReactionNames = [];
@@ -2529,7 +2535,6 @@ client.on( 'message', async ( message ) => {// Regular messages
                 getReact = getReact.toLowerCase().replace( /[^A-Za-z0-9]/g, '' ).replace( /s$/, '' );
                 getReact = ( getReact.indexOf( 'trollol' ) !== -1 ? 'troll' : getReact );
                 getReact = ( getReact.indexOf( 'ring' ) !== -1 ? 'onering' : getReact );
-                getReact = ( getReact.indexOf( 'shoemaker' ) !== -1 || getReact.indexOf( 'technical_13' ) !== -1 ? 'techniCal' : getReact );
                 switch ( getReact ) {
                   case 'smeagol':
                     arrDoReactionIDs.push( '510515649085308929' ); arrDoReactionNames.push( 'Smeagol' ); break;
@@ -2713,15 +2718,15 @@ client.on( 'message', async ( message ) => {// TEST SECTION
         if ( isOwner || isBotMod || isStaff ) {   
           message.delete();
           let hookArgs = strArgs.trim().split( '||' );
-          if ( hookArgs.length < 1 ) {
-            return hook( message.channel, 'Cordovan Usage', '`!Cordovan <message> || [HEXcolor] `\n\n**`<>` part is required**\n**`[]` part is optional**' );
+          if ( hookArgs.length < 1 || hookArgs[ 0 ] === '' ) {
+            hook( message.channel, 'Cordovan Usage', '`!Cordovan <message> || [HEXcolor] `\n\n**`<>` part is required**\n**`[]` part is optional**\n\n[Hex Color Codes]( <https://i.pinimg.com/originals/42/0e/f0/420ef094f257f8940fc6d463d22fb650.gif> )' );
           } else {
             let Cordovan = await message.client.fetchUser( '162592158665277441' );
-            hook( message.channel, '+Cordovan (SSG Community Manager)', hookArgs[ 0 ], ( hookArgs[ 1 ] || 'FFFFFF' ), Cordovan.avatarURL );
+            hook( message.channel, '+Cordovan (SSG Community Manager)', hookArgs[ 0 ], ( hookArgs[ 1 ] ? hookArgs[ 1 ].replace( '#', '' ) : 'FFFFFF' ), Cordovan.avatarURL );
           }         
         } else {
           message.delete();
-          message.author.send( 'I\'m sorry, you don\'t have permission to use the `!Cordovan` command in **' + message.guild.name + '#' + message.channel.name + '**!' );
+          message.author.send( 'I\'m sorry, you don\'t have permission to use the `!Cordovan` command in **' + message.guild.name + '#' + message.channel.name + '**!\n\nPlease contact my master, <@440752068509040660>, if you think you\'ve received this message in error.' );
           console.info( '%o tried to use `!Cordovan %o` in %o#%o', message.author.tag, strArgs, message.guild.name, message.channel.name );
         }
         break;
@@ -2751,7 +2756,7 @@ client.on( 'message', async ( message ) => {// TEST SECTION
         }
         break;
       case 'duvodiad' :
-        if ( ( isOwner || isBotMod ) && guild.id === '201024322444197888' ) {
+        if ( ( isOwner || isBotMod || isAdmin ) && guild.id === '201024322444197888' ) {
           console.log( '%o: %s initiated `!duvodiad` to manually force processDuvodiad() to run.', strNow(), message.author.tag );
           message.delete( 1000 );
           var msgProcessing = await message.reply( 'running processDuvodiad( true )... Please wait.' );
@@ -3015,7 +3020,8 @@ client.on( 'message', async ( message ) => {// Glorious XP!
       if ( guild.id === '201024322444197888' && ( isTroll || isEveryone ) && everyoneExcludedChans.indexOf( message.channel.id ) === -1 ) {
         var isSpoiler = false;
         var intAttachments = message.attachments.size;
-        var msgContent = ':link: [Posted]( <https://discordapp.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '> ) in <#' + message.channel.id + '> by ' + message.author + ':\n';
+        var strMsgLink = '<https://discordapp.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '>';
+        var msgContent = ':link: ' + strMsgLink + '\n...in <#' + message.channel.id + '> by ' + message.author + ':\n';
         var objAttachments = { files: [] };
         var trollMsg = undefined;
         if ( intAttachments >= 1 ) {
@@ -3036,7 +3042,7 @@ client.on( 'message', async ( message ) => {// Glorious XP!
               .catch( errReact => { console.error( '%o: Failed to react with :goggles: to troll msg with spoiler img: %o', strNow(), errReact ); } );
           }
         }/**/if(!trollMsg){//*/
-        msgContent += message.content;
+        msgContent = ':link: [Posted]( ' + strMsgLink + ' ) in <#' + message.channel.id + '> by ' + message.author + ':\n' + message.content;
         var msgUser = message.author;
         var msgMember = await message.guild.fetchMember( msgUser.id );
         var msgWebhook = new Discord.RichEmbed()

@@ -1,0 +1,16 @@
+{
+	"URL": "de/spiel/aktuelles/übertragung-gemeinsamer-gegenstände-charaktertransfers-und-faq",
+	"Title": "Übertragung gemeinsamer Gegenstände, Charaktertransfers und FAQ",
+	"Image": "https://web.archive.org/web/20200601142449im_/https://www.lotro.com/sites/default/files/LOTROcorelogo600DE.png",
+	"Description": "Spieler können erneut über den HdRO-Launcher Charaktere und gemeinsame Gegenstände von einer Spielwelt in eine andere übertragen. Bitte lest weiter, um mehr über den Vorgang sowie seine Funktionsweise und darüber zu erfahren, was Ihr vor einer Übertragung bedenken solltet.",
+	"FieldNames": [
+		"Übertragungen sind von den folgenden Welten zu anderen Welten möglich",
+		"Die Kosten einer Übertragung von Charakteren oder gemeinsamen Gegenständen sind wie folgt",
+		"So schließt Ihr die Übertragung ab"
+	],
+	"FieldValues": [
+		":small_blue_diamond: US-Welten zu US-Welten\n:small_blue_diamond: Europäischen Welten zu europäischen Welten\n:small_blue_diamond: Die legendären Welten: Anor zu Ithil und von Ithil zu Anor\n\nÜbertragungen von älteren, geschlossenen Spielwelten zu aktiven Spielwelten sind aktuell nicht möglich, aber wir planen, derartige Übertragungen in der Zukunft wieder anzubieten.",
+		":small_blue_diamond: Charaktertransfer: 2495 LOTRO-Punkte\n:small_blue_diamond: Übertragung gemeinsamer Gegenstände: 495 LOTRO-Punkte (kostenlos mit gleichzeitigem Charaktertransfer)\n:small_blue_diamond: Übertragung gemeinsamer Gegenstände und Charaktertransfer von Ithil zu Anor: Kostenlos\n\nBitte beachtet, dass eine Übertragung von einem US-Server auf einen europäischen Server oder andersherum nicht möglich ist. Es ist auch nicht möglich, von den legendären Welten Anor oder Ithil auf eine nicht-legendäre Welt zu wechseln.",
+		":one: Meldet Euch mit Eurem Benutzernamen und Passwort beim Launcher an. Wählt im Launcher die Schaltfläche „Übertragung“.\n:two: Wählt den Server, von dem der Charakter oder die gemeinsamen Gegenstände übertragen werden sollen.\n:three: CWählt, welche Charaktere übertragen werden sollen und ob die gemeinsamen Gegenstände ebenfalls den Server wechseln.\n:four: Wählt die Welt, zu der Ihr umziehen möchtet.\n:five: Bestätigt die Übertragung.\n:six: Bestätigt erneut.\nDie Übertragung gemeinsamer Gegenstände ermöglicht die Übertragung aller Konto-Gegenstände, die Eure Charaktere gemeinsam nutzen, von einer Welt in eine andere. Zu diesen Gegenständen gehören:\n:small_blue_diamond: Kontoweite gemeinsame Währung (Mithril-Münzen & Scharmützel-Zeichen)\n:small_blue_diamond: Gemeinsamer Lagerraum\n:small_blue_diamond: Lagerkammer\n:small_blue_diamond: Kleiderschrank\n:small_blue_diamond: Schicksal"
+	]
+}

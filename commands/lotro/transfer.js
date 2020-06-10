@@ -58,7 +58,7 @@ class Transfers extends commando.Command {
     var baseURL = 'https://www.lotro.com/';
     var pathName = 'en/worldtransfer';
     var msgEmbed = new Discord.RichEmbed()
-      .setColor( '#B81F24' )
+      .setColor( '#234290' )
       .setTitle( 'Character and Shared Item Transfers and FAQ' )
       .setThumbnail( 'http://web.archive.org/web/20200601141932im_/https://www.lotro.com/sites/default/files/lotro_f2p_medium_screen_14.png' )
       .setURL( baseURL + pathName )
@@ -66,7 +66,7 @@ class Transfers extends commando.Command {
       .addField( '**Transfers are possible from the following game worlds to other game worlds:**',
       ':small_blue_diamond: U.S. game worlds to U.S. game worlds\n:small_blue_diamond: European game worlds to European game worlds\n:small_blue_diamond: The Legendary Worlds of Anor to Ithil, and from Ithil to Anor\n\nTransfers are not currently avaiable from an older, closed game world to an active game world, although we intend to reintroduce those transfers in the future.' )
       .addField( '**The cost to transfer a character or shared items is as follows:**', ':small_blue_diamond: Character Transfer: 2,495 LOTRO Points\n:small_blue_diamond: Shared Items Transfer: 495 LOTRO Points (free with a character transfer, only at the time of the character transfer)\n:small_blue_diamond: Character and Shared Items Transfer from Ithil to Anor: Free\n\nNote that it is not possible to transfer from a U.S. Server to a European Server, or from a European Server to a U.S. Server. It is also not yet possible to transfer from the Legendary Worlds of Anor or Ithil to a non-Legendary game world.' )
-      .addField( '**Here is the process to complete the transfer:**', ':one: Log into the game launcher using your user name and password. Select the Transfer button on the launcher.\n:two: Select the server to transfer your character or Shared Items from.\n:three:Select which characters to transfer and whether to transfer Shared Items.\n:four: Select which world you would like to transfer to.\n:five: Confirm your transfer.\n:six: Confirm again.\nShared Items transfer allows for the transfer of account-level items that are shared between your characters on one world to another world. These items include the following:\n:small_blue_diamond: Account Shared Currency (Mithril Coins and Skirmish Marks)\n:small_blue_diamond: Shared Storage\n:small_blue_diamond: Housing Storage\n:small_blue_diamond: Wardrobe\n:small_blue_diamond: Destiny' )
+      .addField( '**Here is the process to complete the transfer:**', ':one: Log into the game launcher using your user name and password. Select the Transfer button on the launcher.\n:two: Select the server to transfer your character or Shared Items from.\n:three: Select which characters to transfer and whether to transfer Shared Items.\n:four: Select which world you would like to transfer to.\n:five: Confirm your transfer.\n:six: Confirm again.\nShared Items transfer allows for the transfer of account-level items that are shared between your characters on one world to another world. These items include the following:\n:small_blue_diamond: Account Shared Currency (Mithril Coins and Skirmish Marks)\n:small_blue_diamond: Shared Storage\n:small_blue_diamond: Housing Storage\n:small_blue_diamond: Wardrobe\n:small_blue_diamond: Destiny' )
       .setTimestamp()
       .setFooter( '... as requested by ' + message.author.tag + '.' );
     var msgContent = 'English: ';

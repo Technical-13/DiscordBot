@@ -198,13 +198,6 @@ class Specials extends commando.Command {
                       updateFailed = true;
                     }
                   }
-                  if ( updateFailed ) {
-                    message.react( '%E2%9D%8C' ).catch( errReact => { console.error( '%s: Failed to react to failed `%s set %s` request.', strNow(), strAlias, strElement, errReact ); } );
-                  } else {
-                    message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Failed to react to successful `%s set %s` request.', strNow(), strAlias, strElement, errReact ); } );
-                    var specialsAdded = await message.reply( 'the update to the specials was successfully added. :white_check_mark:' );
-                    specialsAdded.delete( 30000 ).catch( errDel => { console.error( '%s: Failed to delete `%s set %s` confirmation from \'%s#%s\': %o', strNow(), strAlias, strElement, message.channel.name, guild.name, errDel ); } );
-                  }
                 } );
               } else {
                 var intFirstTick = ( arrArgs.slice( 2 ).join( ' ' ).indexOf( '`' ) + 1 );
@@ -212,6 +205,13 @@ class Specials extends commando.Command {
                 strNewSpecials = arrArgs.slice( 2 ).join( ' ' ).substring( intFirstTick, intLastTick );
                 updateFailed = await setSpecials( message, strNewSpecials );
                 if ( updateFailed ) {
+                  fs.readFile( '../' + fsSettings, 'utf8', ( errRead, fileData ) => {
+                    if ( errRead ) { throw errRead; }
+                    fileData = JSON.parse( fileData );
+                    fileData[ bot ] = settings[ bot ];
+                    var strSettings = JSON.stringify( fileData );
+                    fs.writeFile( '../' + fsSettings, strSettings, ( errWrite ) => { if ( errWrite ) { throw errWrite; } } );
+                  } );
                   message.react( '%E2%9D%8C' ).catch( errReact => { console.error( '%s: Failed to react to failed `%s set %s` request.', strNow(), strAlias, strElement, errReact ); } );
                 } else {
                   message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Failed to react to successful `%s set %s` request.', strNow(), strAlias, strElement, errReact ); } );
@@ -261,6 +261,16 @@ class Specials extends commando.Command {
                   }
                 }
               } );
+              fs.readFile( '../' + fsSettings, 'utf8', ( errRead, fileData ) => {
+                if ( errRead ) { throw errRead; }
+                fileData = JSON.parse( fileData );
+                fileData[ bot ] = settings[ bot ];
+                var strSettings = JSON.stringify( fileData );
+                fs.writeFile( '../' + fsSettings, strSettings, ( errWrite ) => { if ( errWrite ) { throw errWrite; } } );
+              } );
+              message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
+              break;
+            case 'ABORT' :
               fs.readFile( '../' + fsSettings, 'utf8', ( errRead, fileData ) => {
                 if ( errRead ) { throw errRead; }
                 fileData = JSON.parse( fileData );

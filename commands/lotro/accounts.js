@@ -32,19 +32,25 @@ class AccountCompare extends commando.Command {
         .setThumbnail( 'https://nintendookie.files.wordpress.com/2010/09/capture.png' )
         break;
       case 'PF2P': case 'PREMIUM' : msgEmbed
-        .setDescription( 'A **premium** subscription (sometimes called **Freemium**) means that real world money has been spent on the account in the form of a purchase from the [LOTRO Market]( <https://store.standingstonegames.com/store/ssg/en_US/list/categoryID.58516200/ThemeID.4823088100> ) or as a previous [VIP subscription]( <https://www.lotro.com/en/game/vip> ) that has been canceled or lapsed.  There are ways to acquire this subscription status without actually spending *your* cash on it, if you\'re willing to do a little work.  Many <@&201711028260569090> of LotRO and other entities (such as this Discord server in <#254624477038510080> for a [Steely Dawn Starter Pack]( <https://lotro-wiki.com/index.php/Item:Mac_Starter_Bundle> ) and eventually <#255361722045562880> for a [*`!quadpack`*]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.284460100/categoryID.58516200> )) do giveaways and contests on their personal channels and/or the official channel and there are' )
+        .setDescription( 'A **premium** subscription (sometimes called **Freemium**) means that real world money has been spent on the account in the form of a purchase from the [LOTRO Market]( <https://store.standingstonegames.com/store/ssg/en_US/list/categoryID.58516200/ThemeID.4823088100> ) or as a previous [VIP subscription]( <https://www.lotro.com/en/game/vip> ) that has been canceled or lapsed.  There are ways to acquire this subscription status without actually spending *your* cash on it, if you\'re willing to do a little work.  Many <@&201711028260569090> of LotRO and other entities (such as this Discord server) do giveaways and contests on their personal channels and/or the official channel' )
         break;
       case 'VIP': case 'SUBSCRIBER': case 'SUBSCRIPTION' : msgEmbed
-        .setDescription( 'LOTRO\'s **VIP** program offers unlimited access to the majority of LOTRO\'s game content and features and is required for access to the Legendary servers.\n\nThe only content/race/class features not directly available with your VIP subscription and must be purchased separately are:\n' +
-        ':arrow_right: [**Expansion packs**]( <https://lotro-wiki.com/index.php/Category:LOTRO_Store_Expansion_Packs> )\n' +
-        ':arrow_right::arrow_right: [**`!quadpack`**]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.284460100/categoryID.58516200> )\n' +
-        ':arrow_right::arrow_right::arrow_right: [**Mines of Moria**]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.253905700/categoryID.58733200/parentCategoryID.58516200> )\n' +
-        ':arrow_right::arrow_right::arrow_right: [**Siege of Mirkwood**]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.253909200/categoryID.58733200/parentCategoryID.58516200> )\n' +
-        ':arrow_right::arrow_right::arrow_right: [**Rise of Isengard**]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.230852600/categoryID.58733200/parentCategoryID.58516200> )\n' +
-        ':arrow_right::arrow_right::arrow_right: [**Riders of Rohan**]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.286391100/categoryID.58733200/parentCategoryID.58516200> )\n' +
-        ':arrow_right::arrow_right: [**Helm\'s Deep**]( <https://store.standingstonegames.com/store/ssg/en_US/pd/ThemeID.4823088100/productID.285572200/categoryID.58733200/parentCategoryID.58516200> )\n' +
-        ':arrow_right::arrow_right: [**`!Mordor`**]( <https://store.standingstonegames.com/store/ssg/en_US/custom/pbpage.lotro-mordor> )\n' +
-        '<:elf:249042861792690176> **High-Elf** race\n<:beorning:237646627521691648> **Beorning** race/class\n<:runekeeper:237648127891341312> **Rune Keeper** class\n<:warden:237648209286135811> **Warden** class' )
+        .setDescription( 'LOTRO\'s **VIP** program offers unlimited access to the majority of LOTRO\'s game content and features and is required for access to the Legendary servers.\n\nThe only content/race/class features not directly available with your VIP subscription and must be purchased separately are:' )
+        .addField( '**Expansion packs:**', 
+        ':arrow_right: [**`!quadpack`**]( <https://bit.ly/QuadPackLotRO> )\n' +
+        ':arrow_right::arrow_right: [**Mines of Moria**]( <https://bit.ly/MoriaLotRO> )\n' +
+        ':arrow_right::arrow_right: [**Siege of Mirkwood**]( <https://bit.ly/MirkwoodLotRO> )\n' +
+        ':arrow_right::arrow_right: [**Rise of Isengard**]( <https://bit.ly/IsengardLotRO> )\n' +
+        ':arrow_right::arrow_right: [**Riders of Rohan**]( <https://bit.ly/RohanLotRO> )\n' +
+        ':arrow_right: [**Helm\'s Deep**]( <https://bit.ly/HelmsDeepLotRO> )\n' +
+        ':arrow_right: [**`!Mordor`**]( <https://bit.ly/MordorLotRO> )\n' +
+        ':arrow_right: [**Minas Morgul**]( <https://lotro.com/en/minasithil/> )' )
+        .addField( '**Races/Classes:**',
+        '<:elf:249042861792690176> [**High-Elf**]( <https://lotro-wiki.com/index.php/High_Elf> ) race\n' +
+        '<:dwarf:249042757954437122> [**Stout-axe**]( <https://lotro-wiki.com/index.php/Stout-axe> ) race\n' +
+        '<:beorning:237646627521691648> [**Beorning**]( <https://lotro-wiki.com/index.php/Beorning_(Race)> ) race/class\n' +
+        '<:runekeeper:237648127891341312> [**Rune Keeper**]( <https://lotro-wiki.com/index.php/Rune-keeper> ) class\n' +
+        '<:warden:237648209286135811> [**Warden**]( <https://lotro-wiki.com/index.php/Warden> ) class' )
         .setThumbnail( 'https://tagn.files.wordpress.com/2010/06/lotrovip.jpg' )
         break;
       case 'FOUNDER' : msgEmbed

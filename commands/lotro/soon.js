@@ -8,13 +8,13 @@ const objTimeString = { timeZone: 'America/New_York',
   hour: 'numeric', minute: 'numeric', second: 'numeric' };
 var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
 const strScreenShotPath = path.join( __dirname, '../../' );
-const isDebug = true;//settings[ bot ].onError.isDebugMode;
+const isDebug = settings[ bot ].onError.isDebugMode;
 
 class Soon extends commando.Command {
   constructor( client ) {
     super( client, {
       name: 'soon',
-      group: 'lotro',
+      group: bot.toLowerCase().replace( 'bot', '' ),
       memberName: 'soon',
       description: 'Soon?'
     } );

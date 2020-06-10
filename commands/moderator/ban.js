@@ -48,7 +48,7 @@ class BanUser extends commando.Command {
             message.channel.send( '\n:name_badge:**Name:** __' +
               memberBanInfo.user.username + '#' + memberBanInfo.user.discriminator
               + '__ :id:' + memberBanInfo.user.id +
-              ' **Reason:**\n\t' + memberBanInfo.reason.replace( /[\n\r]/g, ' ' ).replace( /(https?:\/\/[^\s]*)/g, '<$1>' ) );
+              '\n**Reason:**\n\t' + memberBanInfo.reason.replace( /[\n\r]/g, ' ' ).replace( /(https?:\/\/[^\s]*)/g, '<$1>' ) );
           } );
         } );
       } );

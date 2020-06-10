@@ -8,7 +8,7 @@ const objTimeString = { timeZone: 'America/New_York',
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric' };
 var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
-const strScreenShotPath = path.join( __dirname, '../../' );
+const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
 const isDebug = true;//settings[ bot ].onError.isDebugMode;
 
 class Tanglecorn extends commando.Command {

@@ -14,7 +14,7 @@ const objTimeString = {
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
   timeZone: 'America/New_York', timeZoneName: 'short' };
-const strScreenShotPath = path.join( __dirname, '../../' );
+const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
 var strNow = function () { return ( new Date() ).toLocaleDateString( 'en-US', objTimeString ); };
 const isDebug = true;//settings[ bot ].onError.isDebugMode;
 
@@ -326,8 +326,7 @@ class BotConfig extends commando.Command {
                 message.author.send( 'I\'m sorry, you can\'t view my permissions in **' + guild.name + '**. Please contact my owner(s) if you think this message is in error.' );
                 arrOwners.forEach( owner => { owner.send( message.author + ' attempted to acquire my permissions for ' + guild.name + ' (' + guild.id + '), but was unable to do so.' ); } );
               }
-            } )
-            .catch( errDel => {
+            } ).catch( errDel => {
               if ( isAdministrator && !isBotMod ) {
                 message.reply( 'I am unable to process your request.  Please ask ' + guild.owner.user.tag + ' to make sure I have the `MANAGE_MESSAGES` permission.  Thanks! :heart:' ).then( replySuccess => { replySuccess.edit( message.author + ', I am unable to process your request.  Please ask ' + guild.owner.user + ' to make sure I have the `MANAGE_MESSAGES` permission.  Thanks! :heart:' ) } );
               } else if ( !isBotMod ) {

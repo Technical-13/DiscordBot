@@ -7,7 +7,7 @@ const objTimeString = { timeZone: 'America/New_York',
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric' };
 var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
-const strScreenShotPath = path.join( __dirname, '../../' );
+const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
 const isDebug = settings[ bot ].onError.isDebugMode;
 
 class Soon extends commando.Command {

@@ -7,7 +7,7 @@ const objTimeString = {
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
   timeZone: 'America/New_York', timeZoneName: 'short' };
-const strScreenShotPath = path.join( __dirname, '../../' );
+const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
 
 class PourFourty extends commando.Command {
   constructor( client ) {

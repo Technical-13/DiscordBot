@@ -1,7 +1,7 @@
 {
-	"issue": 163,
-	"URI": "https://www.lotro.com/en/game/articles/lotro-beacon-issue-163",
-	"image": "https://web.archive.org/web/20200611191350im_/https://www.lotro.com/sites/default/files/beacon163headerEN.png",
+	"issue": 164,
+	"URI": "https://www.lotro.com/en/game/articles/lotro-beacon-issue-164",
+	"image": "https://web.archive.org/web/20200612181754im_/https://www.lotro.com/sites/default/files/beacon164headerEN.png",
 	"bonusDays": [
 		{
 			"ends": "2020-09-01T03:00:00Z",
@@ -12,6 +12,11 @@
 			"ends": "2020-07-01T03:00:00Z",
 			"name": "**World Character Transfers**:",
 			"value": "**Character Transfers** are possible once again!\nGet more information with `!transfers [en|fr|de]`\n<:StandingStoneGames:342663018586308632> *(please use an off-topic/spam channel)*"
+		},
+		{
+			"ends": "2020-06-15T03:00:00Z",
+			"name": "LOTRO Bonus Days bring you...",
+			"value": ":large_blue_diamond: **+20% Virtue XP Boost** now through June 14th!**"
 		}
 	],
 	"freebies": [
@@ -27,15 +32,15 @@
 			"week": "...through August 31st"
 		},
 		{
-			"ends": "2020-06-12T03:00:00Z",
-			"code": "CRIMSONDYE",
+			"ends": "2020-06-19T03:00:00Z",
+			"code": "HOUROFSLAY",
 			"title": "Weekly Coupon",
 			"item": {
-				"name": "Dye: Crimson",
-				"link": "https://lotro-wiki.com/index.php/Item:Crimson_Dye"
+				"name": "Slayer Deed Accelerator (60 minutes)",
+				"link": "https://lotro-wiki.com/index.php/Item%3ASlayer_Deed_Accelerator_(60_min)"
 			},
 			"quantity": 1,
-			"week": "June 4th - 11th"
+			"week": "June 12th - 18th"
 		}
 	],
 	"sales": [
@@ -45,9 +50,9 @@
 			"value": [ "[**Friends Forever**]( <https://www.lotro.com/en/friendsforever> )" ]
 		},
 		{
-			"ends": "2020-06-12T03:00:00Z",
-			"name": "Store, Carry, and Share! — Get 20% off through June 4th:",
-			"value": [ "Vault Storage and Shared Storage", "Inventory Slots", "Currency Cap" ]
+			"ends": "2020-06-19T03:00:00Z",
+			"name": "Relive your Favorite Chapters! — Get 20% off through June 18th:",
+			"value": [ "Gift of the Valar and Blessing of the Valar", "3rd Age Item Drove", "Legacy Scroll Box" ]
 		}
 	]
 }

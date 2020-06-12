@@ -1,7 +1,7 @@
 {
-	"issue": 385,
-	"URI": "https://www.ddo.com/en/news/ddo-chronicle-issue-385",
-	"image": "https://web.archive.org/web/20200607125708im_/https://www.ddo.com/sites/default/files/chronicle385header.jpg",
+	"issue": 386,
+	"URI": "https://www.ddo.com/en/news/ddo-chronicle-issue-386",
+	"image": "https://web.archive.org/web/20200612181740im_/https://www.ddo.com/sites/default/files/chronicle386header.jpg",
 	"bonusDays": [
 		{
 			"ends": "2020-06-01T03:00:00Z",
@@ -9,9 +9,9 @@
 			"value": ":small_blue_diamond: [**FREE CONTENT**]( <https://www.ddo.com/friendsforever> ) (through 8/31)"
 		},
 		{
-			"ends": "2020-05-26T03:00:00Z",
+			"ends": "2020-06-15T03:00:00Z",
 			"name": "DDO Bonus Days bring you...",
-			"value": ":large_blue_diamond:**Double Commendations of Valor** now through June 11th!**"
+			"value": ":large_blue_diamond: **+5% Buddy Boost (inc. raids)** now through June 14th!"
 		}
 	],
 	"freebies": [
@@ -27,15 +27,15 @@
 			"week": "...through August 31st"
 		},
 		{
-			"ends": "2020-05-29T03:00:00Z",
-			"code": "AWAYEVIL",
+			"ends": "2020-06-19T03:00:00Z",
+			"code": "THIEVES2",
 			"title": "Weekly Coupon",
 			"item": {
-				"name": "Lasting Potion of Protection from Evil (+2)",
-				"link": "https://ddowiki.com/page/DDOstore/Spells_and_Potions#Lasting.2BPotion.2Bof.2B.255B.255BProtection.2Bfrom.2BEvil.255D.255D.2B.252B2"
+				"name": "+2 Thieves Tools",
+				"link": "https://ddowiki.com/page/Item:Thieves%27_Tools"
 			},
-			"quantity": 5,
-			"week": "June 5th - 11th"
+			"quantity": 10,
+			"week": "June 12th - 18th"
 		}
 	],
 	"sales": [
@@ -45,13 +45,13 @@
 			"value": [ "[**Friends Forever**]( <https://www.ddo.com/friendsforever> )" ]
 		},
 		{
-			"ends": "2020-06-12T03:00:00Z",
-			"name": "**Bigger is Better!** Get 25% off now through June 11th:",
+			"ends": "2020-06-19T03:00:00Z",
+			"name": "**Monster Madness!** Get 25% off now through June 18th:",
 			"value": [
-				"Gold Seal Elixirs of Sovereign Healing x100",
-				"Superior Spell Point Potions x100",
-				"Sovereign Guild Renown Elixirs x25",
-				"Colossal Ingredient & Augment Bags"
+				"Monster Manuals",
+				"Slayer Boosts",
+				"Select Creature Companion Certificates and Tricks",
+				"Companion and Creature Companion Renames"
 			]
 		}
 	]

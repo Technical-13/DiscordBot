@@ -110,6 +110,8 @@ class Specials extends commando.Command {
   }
 
   async run( message, args ) {
+    var msgChan = ( message.mentions.channels.size >= 1 ? message.mentions.channels.first() : message.channel );
+    args = args.replace( '<#' + msgChan.id + '>', '' ).trim();
     const strAlias = message.content.split( ' ' )[ 0 ];
     var objSetUsers = settings[ bot ].moderators;
     var objUpdated = settings[ bot ].specials.updated;
@@ -141,7 +143,7 @@ class Specials extends commando.Command {
     
     switch ( strCommand ) {
       case 'GET' :
-        message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
+        message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!' + strAlias + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
         switch ( strElement ) {
           case 'OBJECT' :
             if ( JSON.stringify( objSpecials ).length <= 1979 ) {
@@ -176,7 +178,8 @@ class Specials extends commando.Command {
                   if ( file.error ) {
                     console.error( '%s: Failed to get %s:\n%o', strNow(), msgTextFile.url, file.error );
                     updateFailed = true;
-                  } else {
+                  }
+                  else {
                     strNewSpecials = file.body;
                     try { let objJSONparse = JSON.parse( strNewSpecials ); } catch ( notJSON ) {
                       console.error( '%s: Failed to parse JSON from "%s", will JSON.stringify and try again!', strNow(), strNewSpecialsFilePath + strSpecialFilename );
@@ -199,7 +202,8 @@ class Specials extends commando.Command {
                     }
                   }
                 } );
-              } else {
+              }
+              else {
                 var intFirstTick = ( arrArgs.slice( 2 ).join( ' ' ).indexOf( '`' ) + 1 );
                 var intLastTick = arrArgs.slice( 2 ).join( ' ' ).lastIndexOf( '`' );
                 strNewSpecials = arrArgs.slice( 2 ).join( ' ' ).substring( intFirstTick, intLastTick );
@@ -268,7 +272,7 @@ class Specials extends commando.Command {
                 var strSettings = JSON.stringify( fileData );
                 fs.writeFile( '../' + fsSettings, strSettings, ( errWrite ) => { if ( errWrite ) { throw errWrite; } } );
               } );
-              message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
+              message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!' + strAlias + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
               break;
             case 'ABORT' :
               fs.readFile( '../' + fsSettings, 'utf8', ( errRead, fileData ) => {
@@ -278,12 +282,12 @@ class Specials extends commando.Command {
                 var strSettings = JSON.stringify( fileData );
                 fs.writeFile( '../' + fsSettings, strSettings, ( errWrite ) => { if ( errWrite ) { throw errWrite; } } );
               } );
-              message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
+              message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!' + strAlias + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
               break;
             default :
               message.reply( 'Sorry - I can\'t complete that action yet.' );
               message.react( '%E2%9D%8C' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, errReact ); } );
-              message.delete( 30000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
+              message.delete( 30000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!' + strAlias + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
           }
         }
         else {
@@ -292,7 +296,7 @@ class Specials extends commando.Command {
         break;
       case 'NONE' :
       default :
-        message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!noserver' + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
+        message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!' + strAlias + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
         strUpdaters = ( objUpdated.setAuthorID === objUpdated.conAuthorID ? objUpdated.setAuthorName : objUpdated.setAuthorName + ' & ' + objUpdated.conAuthorName );
         var msgEmbed = new Discord.RichEmbed()
       .setTitle( strPeriodicalName + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
@@ -319,13 +323,24 @@ class Specials extends commando.Command {
             msgEmbed.addField( objSpecials.sales[ sale ].name, ':small_blue_diamond:' + objSpecials.sales[ sale ].value.join( '\n:small_blue_diamond:' ) );
           }
         }
-        var msgSpecials = await message.channel.send( ':link: ' + objSpecials.URI, { embed: msgEmbed } );
+        var msgSpecials = await msgChan.send( ':link: ' + objSpecials.URI, { embed: msgEmbed } ).catch( errSend => {          
+          if ( msgChan.id !== message.channel.id ) {
+            console.error( '%s: Unable to complete %s\'s request in %s#%s for me to send the specials to %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, msgChan.name, msgChan.guild.name, errSend );
+          } else { console.error( '%s: Unable to complete %s\'s request for me to send the specials to %s#%s: %o', strNow(), message.author.tag, msgChan.name, msgChan.guild.name, errSend ); }
+        } );
         if ( strCommand !== 'STATIC' && strCommand !== 'PIN' ) {
+          if ( msgChan.id !== message.channel.id ) {
+            message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react success to %s\'s request in %s#%s for me to pin the specials to %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, msgChan.name, msgChan.guild.name, errReact ); } );
+          }
           remove( message, msgSpecials, { strDelConfirmed: 'Thank you for viewing this weeks specials.  Please come again, ' + message.author + '. <:SSGPoint:500026272999669761>' } );
-        } else if ( strCommand === 'PIN' && ( isOwner || isBotMod || isCrown || isAdmin ) ) {
+        }
+        else if ( strCommand === 'PIN' && ( isOwner || isBotMod || isCrown || isAdmin ) ) {
           msgSpecials.pin().then( msgPinned => {
+            if ( msgChan.id !== message.channel.id ) {
+              message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s requesting me to pin the specials to %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, msgChan.name, msgChan.guild.name, errReact ); } );
+            }
             if ( isDebug ) {
-              console.log( '%s: I pinned the `!specials` to %s#%s for %s.', strNow(), message.guild.name, message.channel.name, message.author.tag );
+              console.log( '%s: I pinned the `!specials` to %s#%s for %s.', strNow(), msgChan.guild.name, msgChan.name, message.author.tag );
             }
           } );
         }

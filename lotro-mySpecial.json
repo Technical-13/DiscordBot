@@ -1,0 +1,53 @@
+{
+	"issue": 163,
+	"URI": "https://www.lotro.com/en/game/articles/lotro-beacon-issue-163",
+	"image": "https://web.archive.org/web/20200611191350im_/https://www.lotro.com/sites/default/files/beacon163headerEN.png",
+	"bonusDays": [
+		{
+			"ends": "2020-09-01T03:00:00Z",
+			"name": "**COVID-19** Special Promotion:",
+			"value": ":small_blue_diamond: [**FREE CONTENT**]( <https://www.lotro.com/en/friendsforever> ) (through 8/31)"
+		},
+		{
+			"ends": "2020-07-01T03:00:00Z",
+			"name": "**World Character Transfers**:",
+			"value": "**Character Transfers** are possible once again!\nGet more information with `!transfers [en|fr|de]`\n<:StandingStoneGames:342663018586308632> *(please use an off-topic/spam channel)*"
+		}
+	],
+	"freebies": [
+		{
+			"ends": "2020-09-01T03:00:00Z",
+			"code": "LOTROFREEQUESTS",
+			"title": "FREE CONTENT",
+			"item": {
+				"name": "Free Quest & Region Packs",
+				"link": "https://www.lotro.com/en/friendsforever"
+			},
+			"quantity": 1,
+			"week": "...through August 31st"
+		},
+		{
+			"ends": "2020-06-12T03:00:00Z",
+			"code": "CRIMSONDYE",
+			"title": "Weekly Coupon",
+			"item": {
+				"name": "Dye: Crimson",
+				"link": "https://lotro-wiki.com/index.php/Item:Crimson_Dye"
+			},
+			"quantity": 1,
+			"week": "June 4th - 11th"
+		}
+	],
+	"sales": [
+		{
+			"ends": "2020-09-01T03:00:00Z",
+			"name": "Get select expansion quests for only 99<:SSGPoint:500026272999669761> each!",
+			"value": [ "[**Friends Forever**]( <https://www.lotro.com/en/friendsforever> )" ]
+		},
+		{
+			"ends": "2020-06-12T03:00:00Z",
+			"name": "Store, Carry, and Share! — Get 20% off through June 4th:",
+			"value": [ "Vault Storage and Shared Storage", "Inventory Slots", "Currency Cap" ]
+		}
+	]
+}

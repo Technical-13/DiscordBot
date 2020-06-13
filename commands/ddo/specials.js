@@ -111,7 +111,7 @@ class Specials extends commando.Command {
 
   async run( message, args ) {
     var msgChan = ( message.mentions.channels.size >= 1 ? message.mentions.channels.first() : message.channel );
-    args = args.replace( '<#' + msgChan.id + '>', '' ).trim();
+    args = args.replace( '<#' + msgChan.id + '>', '' ).replace( '  ', ' ' );
     const strAlias = message.content.split( ' ' )[ 0 ];
     var objSetUsers = settings[ bot ].moderators;
     var objUpdated = settings[ bot ].specials.updated;
@@ -336,6 +336,16 @@ class Specials extends commando.Command {
           remove( message, msgSpecials, { strDelConfirmed: 'Thank you for viewing this weeks specials.  Please come again, ' + message.author + '. <:SSGPoint:500026272999669761>' } );
         }
         else if ( strCommand === 'PIN' && ( isOwner || isBotMod || isCrown || isAdmin ) ) {
+          message.channel.fetchPinnedMessages()
+            .then( pinnedMsgs => {
+              pinnedMsgs.array().forEach( async msg => {
+                if ( msg.author.id === msg.client.user.id && msg.embeds.length !== 0 ) {
+                  msg.unpin();
+                  var unpinnedMsg = await message.channel.send( ':id:' + msg.id + ' was unpinned from ' + msgChan + '.' );
+                  unpinnedMsg.delete( 2500 ).catch( errDel => { console.error( '%o: Failed to delete notification of message unpinned: %o', strNow(), errDel ); } );
+                }
+              } );
+            } );
           msgSpecials.pin().then( msgPinned => {
             if ( msgChan.id !== message.channel.id ) {
               message.react( '%E2%9C%85' ).catch( errReact => { console.error( '%s: Unable to react to %s\'s message in %s#%s requesting me to pin the specials to %s#%s: %o', strNow(), message.author.tag, message.guild.name, message.channel.name, msgChan.name, msgChan.guild.name, errReact ); } );

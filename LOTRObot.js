@@ -10,7 +10,7 @@ const fsUsers = 'users.json';
 const settings = require( path.join( __dirname, '../' + fsSettings ) );
 var jsonGuilds = require( path.join( __dirname, fsGuilds ) );
 var jsonUsers = require( path.join( __dirname, fsUsers ) );
-const strWikiName = ( bot === 'DDObot' ? 'DDOwiki' : 'LOTROwiki' );
+const strWikiName = bot.replace( 'bot', '' ) + 'wiki';
 const myWiki = settings[ bot ].wikis[ strWikiName.toLowerCase() ];
 const wikiArticlePath = myWiki.root + myWiki.article;
 const objTimeString = {
@@ -35,7 +35,7 @@ var strLogChan = {// List all the log channels in a single place here.  Part of 
 //  '': { serverName: '', logChan: { name: '', id: '' } },
   '201024322444197888': { serverName: 'The Lord of the Rings Discord', logChan: { name: 'bot-logs', id: '253534754350170112', fungeon: '235896771547627521', canLog: true } },
 //  '': { serverName: 'Os Filhos de Húrin', logChan: { name: undefined, id: undefined, canLog: false } },
-  '192775085420052489': { serverName: 'The Cat Cabin', logChan: { name: 'lord-of-the-rings-online', id: '347347432323153924', canLog: true } },
+  '192775085420052489': { serverName: 'The Shoe Store', logChan: { name: 'lord-of-the-rings-online', id: '347347432323153924', canLog: true } },
 //  '': { serverName: 'One Last Time', logChan: { name: undefined, id: undefined, canLog: false } },
 //  '': { serverName: 'Raiders Of Rohan', logChan: { name: undefined, id: undefined, canLog: false } },
 //  '464630580810612756': { serverName: 'LOTRO Arkenstone Discord', logChan: { name: undefined, id: undefined, canLog: false } },
@@ -945,9 +945,7 @@ async function nameCheck( mbrNew, mbrOld, checkType ) {
       if ( ( new Discord.Permissions( role.permissions ) ).has( 8 ) ) { objAdminRoles[ objAdminRoles.length ] = role; }
     } );
     objAdminRoles.forEach( function( role, index ) {
-      if ( ( role.members.keyArray() ).indexOf( mbrNew.id ) !== -1 || mbrNew.id === guild.ownerID ) {
-        isAdmin = true;
-      }
+      if ( ( role.members.keyArray() ).indexOf( mbrNew.id ) !== -1 || mbrNew.id === guild.ownerID ) { isAdmin = true; }
     } );
     var sysopRole = guild.roles.get( '201710817614364673' );
     var isSysop = await ( sysopRole && ( sysopRole.members.keyArray() ).indexOf( mbrNew.id ) !== -1 ? true : false );
@@ -973,7 +971,119 @@ async function nameCheck( mbrNew, mbrOld, checkType ) {
   else { jsonUsers[ mbrNew.id ].guilds[ guild.id ].ntag = ( mbrNew.nickname ? mbrNew.nickname + '#' + mbrNew.user.discriminator : mbrNew.user.tag ); }
   return true;
 }
-    
+
+function getJsonGuild( guildID ) {
+  guild = client.guilds.get( guildID );
+  if ( Object.keys( jsonGuilds ).indexOf( guildID ) === -1 ) {
+    jsonGuilds[ guildID ] = {
+      'goodbye': {
+        'channel': undefined,
+        'message': 'The **{$guild.name}** says goodbye to {$user} (-{$user.tag}-). (Length of stay: {$member.duration}).'
+      },
+      'levels': {
+        'doInactive': false,
+        'doXP': false,
+        'maxXP': undefined,
+        'minXP': undefined,
+        'msgChan': 'DM',
+        'perHour': undefined,
+        'perMin': undefined
+      },
+      'logChans': [
+        {
+          'name': undefined,
+          'id': undefined,
+          'canLog': false
+        }
+      ],
+      'serverName': guild.name,
+      'welcome': {
+        'antiSpam': false,
+        'channel': undefined,
+        'message': '{$user}, Welcome to **{$guild.name}**!  Have a great time here :wink:!',
+        'role': null,
+        'rolelog': null
+      }
+    };
+    console.log( '%o: Added guild to jsonGuilds: %s.', strNow(), guildID );
+    message.client.guilds.get( '192775085420052489' ).channels.get( '347347432323153924' ).send( 'Added guild to jsonGuilds:\n```JSON\n' + guildID + ': ' + JSON.stringify( jsonGuilds[ guildID ] ) + '\n```' );
+    let strJsonGuilds = JSON.stringify( jsonGuilds );
+    fs.writeFile( fsGuilds, strJsonGuilds, ( errWrite ) => {
+      if ( errWrite ) {
+        client.guilds.get( '192775085420052489' ).channels.get( '347347432323153924' ).send( strNow() + ': Failed to save jsonGuilds on change. Please see console for details.' );
+        console.error( '%o: Failed to save jsonGuilds on change.', strNow(), errWrite );
+      } else { console.log( '%o: Successfully saved jsonGuilds on change.', strNow() ); }
+    } );
+  }
+  
+  return jsonGuilds[ guildID ];  
+}
+
+async function getJsonUser( userID ) {
+  if ( Object.keys( jsonUsers ).indexOf( userID ) === -1 ) {
+    await client.fetchUser( userID ).then( user => {
+      jsonUsers[ user.id ] = {
+        'tag': user.tag,
+        'guilds': {},
+        'intGlobalMessages': 0,
+        'intGlobalPoints': 0,
+        'dateLastPoints': ( new Date() ),
+        'timezone': null,
+        'email': null,
+        'facebook': null,
+        'reddit': null,
+        'steam': null,
+        'twitter': null,
+        'twitch': null,
+        'youtube': null
+      };
+      console.log( '%o: Added user to jsonUsers: %s.', strNow(), userID );
+      message.client.guilds.get( '192775085420052489' ).channels.get( '347347432323153924' ).send( 'Added user to jsonUsers:\n```JSON\n' + userID + ': ' + JSON.stringify( jsonUsers[ userID ] ) + '\n```' );
+      let strJsonGuilds = JSON.stringify( jsonUsers );
+      fs.writeFile( fsGuilds, strJsonGuilds, ( errWrite ) => {
+        if ( errWrite ) {
+          client.guilds.get( '192775085420052489' ).channels.get( '347347432323153924' ).send( strNow() + ': Failed to save jsonUsers on change. Please see console for details.' );
+          console.error( '%o: Failed to save jsonUsers on change.', strNow(), errWrite );
+        } else { console.log( '%o: Successfully saved jsonUsers on change.', strNow() ); }
+      } );
+    } );
+  }
+  
+  return jsonUsers[ userID ];  
+}
+
+async function getJsonUserGuild( userID, guildID ) {
+  var jsonUser = await getJsonUser( userID );
+  if ( Object.keys( jsonUser.guilds ).indexOf( guildID ) === -1 ) {
+    await client.fetchMember( userID ).then( member => {
+      var user = member.user;
+      jsonUser.guilds[ guildID ] = {
+        'canInvite': ( member.permissions.has( 'CREATE_INSTANT_INVITE' ) ? true : false ),
+        'canManageRoles': ( member.permissions.has( 'MANAGE_ROLES' ) ? true : false ),
+        'canManageServer': ( member.permissions.has( 'MANAGE_GUILD' ) ? true : false ),
+        'isAdministrator': false,
+        'isCrown': ( member.id === guild.owner.user.id ? true : false ),
+        'intMessages': 0,
+        'intPoints': 0,
+        'dateLastPoints': ( new Date() ),
+        'ntag': ( member.nickname === null ? user.tag : member.nickname + '#' + user.discriminator ),
+        'roles': ( member.roles.keyArray() || [] )
+      };
+      console.log( '%o: Added guild to user in jsonUsers: %s: $o', strNow(), userID, jsonUser );
+      client.guilds.get( '201024322444197888' ).channels.get( '235896771547627521' ).send( 'Added guild to user in jsonUsers:\n```JSON\n' + JSON.stringify( jsonUser ) + '\n```' );
+      let strJsonGuilds = JSON.stringify( jsonUsers );
+      fs.writeFile( fsGuilds, strJsonGuilds, ( errWrite ) => {
+        if ( errWrite ) {
+          client.guilds.get( '192775085420052489' ).channels.get( '347347432323153924' ).send( strNow() + ': Failed to save jsonUsers on change. Please see console for details.' );
+          console.error( '%o: Failed to save jsonUsers on change.', strNow(), errWrite );
+        } else { console.log( '%o: Successfully saved jsonUsers on change.', strNow() ); }
+      } );
+    } );
+  }
+  
+  return jsonUser.guilds[ guildID ];
+}
+
 const client = new commando.Client( {
   unknownCommandResponse: settings[ bot ].unknownCommandResponse,
   owner: settings[ bot ].owners
@@ -1287,7 +1397,7 @@ client.on( 'guildBanAdd', async ( guild, member ) => {
   if ( guild.id === '201024322444197888' ) {
     if ( strLogChan[ guild.id ] !== undefined ) {
       if ( strLogChan[ guild.id ].logChan.canLog ) {
-        guild.channels.get( strLogChan[ guild.id ].logChan.id ).send( '<:banhammer:248447317617803264> __' + member.username + '**#**' + member.discriminator + '__ (ID:' + member.id + ') was banned from __' + guild.name + '__ (ID:' + guild.id + ').' );
+        guild.channels.get( strLogChan[ guild.id ].logChan.id ).send( '<:banhammer:256166998331883521> __' + member.username + '**#**' + member.discriminator + '__ (ID:' + member.id + ') was banned from __' + guild.name + '__ (ID:' + guild.id + ').' );
       }
     } else {
       console.log( 'Unable to post guildBanAdd event for `' + guild.name + '` (ID:' + guild.id + ') with no log channel defined.' );
@@ -2203,7 +2313,7 @@ client.on( 'message', async ( message ) => {// Regular messages
       switch ( command ) {
         case 'dv' : case 'dver' :
           if ( isOwner || isBotMod ) {
-            message.reply( 'I\'m running Discord.js v'+ Discord.version + ' → <https://discord.js.org/#/docs/main/' + Discord.version + '/general/welcome>' );
+            message.reply( 'I\'m running Discord.js v'+ Discord.version + ' → <https://discord.js.org/#/docs/main/' + Discord.version + '/general/welcome>\n\twith -commando v'+ commando.version + ' → <https://discord.js.org/#/docs/commando/v' + commando.version + '/general/welcome>' );
             message.delete().catch( errDel => { console.error( '%o: Unable to delete !%s request by %s: %o', strNow(), command, message.author.tag, errDel ); } );
           }
           break;
@@ -2249,6 +2359,13 @@ client.on( 'message', async ( message ) => {// Regular messages
             message.channel.send( 'Sorry, ' + message.author + ', but this isn\'t the right channel for that.' );
           }
           break;
+        case 'boosters' :
+          var roleNitroBooster = await guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } );
+          var intBoosters = ( roleNitroBooster ? roleNitroBooster.members.size : 0 );
+          if ( intBoosters > 0 && ( isOwner || isBotMod ) ) {
+            var guildBoosters = await message.guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ).members.array();
+          }
+          break;
         case 'pvpmp' :
         case 'pvmpmp' :// Staff has overridden the need for the person to utter the magic word.
           if ( message.channel.id === '389446825570074624' && isStaff ) {// #pvmp && @Staff
@@ -2286,7 +2403,7 @@ client.on( 'message', async ( message ) => {// Regular messages
                   arrMessages.length = 100;
                   arrMessages.map( thisMessage => thisMessage.delete().catch( errMap => { console.error( '%o: %o', strNow(), errMap ); } ) );
                 } );
-                message.channel.send( '<:banhammer:248447317617803264> ' + usrDick + ' has violated Wheaton\'s Law and may no longer speak. <:RIP:474572596646510622>' );
+                message.channel.send( '<:banhammer:256166998331883521> ' + usrDick + ' has violated Wheaton\'s Law and may no longer speak. <:RIP:474572596646510622>' );
               }
             }
             else {
@@ -2821,13 +2938,13 @@ client.on( 'message', async ( message ) => {// Glorious XP!
     var isBotMod = ( settings[ bot ].moderators.indexOf( message.author.id ) !== -1 ? true : false );
     var isCrown = false, isAdmin = false, isSysop = false, isMod = false, isStaff = false;
     var sysopRole = false, modRole = false, staffRole = false;
-    var isMoorMaster = false, isMonsterPlayer = false, isTroll = false, isEveryone = false;
+    var isMoorMaster = false, isMonsterPlayer = false, isTroll = false, isEveryone = false, isStaffNom = false, isNitro = false;
     var canManage = false, canInvite = false;
-    var thisUser = jsonUsers[ message.author.id ];// Default to new user if not exist
+    var thisUser = jsonUsers[ message.author.id ];// Default to new user if not exist// getJsonUser( message.author.id )
     var thisGuild = null;
     if ( message.guild ) {
       guild = message.guild;
-      thisGuild = thisUser.guilds[ guild.id ];// Add user to guild if not exist
+      thisGuild = thisUser.guilds[ guild.id ];// Add user to guild if not exist// getJsonUserGuild( message.author.id, guild.id )
       var member = guild.members.get( message.author.id );
       isCrown = ( message.author.id === guild.owner.user.id ? true : false );
       isAdmin = false;
@@ -2851,6 +2968,8 @@ client.on( 'message', async ( message ) => {// Glorious XP!
         isMonsterPlayer = await ( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ) && ( message.guild.roles.find( role => { if ( role.name === 'MonsterPlayer' ) { return role; } } ).members.keyArray() ).indexOf( message.author.id ) !== -1 ? true : false );
         isTroll = await ( message.guild.roles.find( role => { if ( role.name === 'Discord Troll' ) { return role; } } ) && ( message.guild.roles.find( role => { if ( role.name === 'Discord Troll' ) { return role; } } ).members.keyArray() ).indexOf( message.author.id ) !== -1 ? true : false );
         isEveryone = await ( message.guild.roles.find( role => { if ( role.name === 'everyone' ) { return role; } } ) && ( message.guild.roles.find( role => { if ( role.name === 'everyone' ) { return role; } } ).members.keyArray() ).indexOf( message.author.id ) !== -1 ? true : false );
+        isStaffNom = await ( message.guild.roles.find( role => { if ( role.name === 'Moi' ) { return role; } } ) && ( message.guild.roles.find( role => { if ( role.name === 'Moi' ) { return role; } } ).members.keyArray() ).indexOf( message.author.id ) !== -1 ? true : false );
+        isNitro = await ( message.guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ) && ( message.guild.roles.find( role => { if ( role.name === 'Nitro Booster' ) { return role; } } ).members.keyArray() ).indexOf( message.author.id ) !== -1 ? true : false );
       }
       var objAuthorPerms = ( await guild.fetchMember( message.author.id ).catch( errFetchMbr => { console.error( '%o: Unable to fetch member for %s (%s): %o', strNow(), message.author.tag, message.author.id, errFetchMbr ); } ) ).permissions;
       canManageServer = ( objAuthorPerms.has( 'MANAGE_GUILD' ) ? true : false );
@@ -2915,6 +3034,7 @@ client.on( 'message', async ( message ) => {// Glorious XP!
           'email': null,
   //        'facebook': null,
           'guilds': {},
+          'intGlobalMessages': 0,
           'intGlobalPoints': 0,
           'dateLastPoints': ( new Date() ),
   //        'reddit': null,
@@ -2927,6 +3047,7 @@ client.on( 'message', async ( message ) => {// Glorious XP!
         jsonUsers[ message.author.id ].guilds[ guild.id ] = {
           'canManageRoles': canManageRoles,
           'canManageServer': canManageServer,
+          'intMessages': 0,
           'intPoints': 0,
           'dateLastPoints': ( new Date() ),
           'isAdministrator': isAdmin,
@@ -2936,10 +3057,12 @@ client.on( 'message', async ( message ) => {// Glorious XP!
         };
   //      console.log( 'Added user to jsonUsers: %o', jsonUsers[ message.author.id ] );
   //      message.client.guilds.get( '201024322444197888' ).channels.get( '235896771547627521' ).send( 'Added user to jsonUsers:\n```JSON\n' + message.author.id + ': ' + JSON.stringify( jsonUsers[ message.author.id ] ).replace( /"roles":\[(.*?)\]/g, p1 => { return '"roles":[ ' + ( p1.split( ',' ).length - 1 ) + ' role' + ( ( p1.split( ',' ).length - 1 ) === 1 ? '' : 's' ) + ' ]'; } ) + '\n```' );
-      } else if ( Object.keys( jsonUsers[ message.author.id ].guilds ).indexOf( guild.id ) === -1 ) {
+      }
+      else if ( Object.keys( jsonUsers[ message.author.id ].guilds ).indexOf( guild.id ) === -1 ) {
         jsonUsers[ message.author.id ].guilds[ guild.id ] = {
           'canManageRoles': canManageRoles,
           'canManageServer': canManageServer,
+          'intMessages': 0,
           'intPoints': 0,
           'dateLastPoints': ( new Date() ),
           'isAdministrator': isAdmin,
@@ -2983,12 +3106,8 @@ client.on( 'message', async ( message ) => {// Glorious XP!
         intXP = Math.floor( baseXP / 5 );    
       }
 
-      if ( !thisUser.dateLastPoints ) {
-        thisUser.dateLastPoints = ( new Date() );
-      }
-      if ( !thisGuild.dateLastPoints ) {
-        thisGuild.dateLastPoints = ( new Date() );
-      }
+      if ( !thisUser.dateLastPoints ) { thisUser.dateLastPoints = ( new Date() ); }
+      if ( !thisGuild.dateLastPoints ) { thisGuild.dateLastPoints = ( new Date() ); }
       var skipIt = false, saveUpdatedUser = false;
       var minutesSinceLastGuild = ( ( new Date() ) - ( new Date( thisGuild.dateLastPoints ) ) ) / 60000;
       if ( minutesSinceLastGuild >= 1 ) {
@@ -2997,7 +3116,11 @@ client.on( 'message', async ( message ) => {// Glorious XP!
         thisGuild.dateLastPoints = ( new Date() );
         console.log( '%o: Added %o points in %o for %s (ID: %s) (%o minutes from last).', strNow(), intXP, guild.name, thisUser.tag, message.author.id, minutesSinceLastGuild );
         skipIt = true;
-      } else { console.log( '%o: %s (ID: %s) didn\'t get %o points in %o#%o for post %o minutes from the previous in guild.', strNow(), thisUser.tag, message.author.id, intXP, guild.name, message.channel.name, minutesSinceLastGuild ); }
+      }
+      else {
+        console.log( '%o: %s (ID: %s) didn\'t get %o points in %o#%o for post %o minutes from the previous in guild.',
+          strNow(), thisUser.tag, message.author.id, intXP, guild.name, message.channel.name, minutesSinceLastGuild );
+      }
       var minutesSinceLastUser = ( ( new Date() ) - ( new Date( thisUser.dateLastPoints ) ) ) / 60000;
       if ( minutesSinceLastUser >= 1 ) {
         if ( !saveUpdatedUser ) { saveUpdatedUser = true; }
@@ -3007,6 +3130,8 @@ client.on( 'message', async ( message ) => {// Glorious XP!
         else { console.log( '%o: Added %o global points for %s (ID: %s) (%o minutes from last).', strNow(), intXP, thisUser.tag, message.author.id, minutesSinceLastUser ); }
       } else { console.log( '%o: %s (ID: %s) didn\'t get %o global points for post %o minutes from the previous.', strNow(), thisUser.tag, message.author.id, intXP, minutesSinceLastUser ); }
       thisUser.intLevel = Math.floor( Math.cbrt( thisUser.intGlobalPoints ) );
+      thisUser.intGlobalMessages++;
+      thisGuild.intMessages++;
       thisGuild.intLevel = Math.floor( Math.cbrt( thisGuild.intPoints ) );
       if ( saveUpdatedUser ) {
         let strJsonUsers = JSON.stringify( jsonUsers );
@@ -3016,6 +3141,7 @@ client.on( 'message', async ( message ) => {// Glorious XP!
           } else { console.log( '%o: Successfully saved %s (ID: %s) to jsonUsers on message (Glorious XP!).', strNow(), thisUser.tag, message.author.id ); }
         } );
       }
+//      if ( message.author.id === '160826100396589056' && message.author.roles.keyArray().indexOf( '448102416039018516' ) === -1 && !isNitro ) { message.author.addRole( '448102416039018516' ); }
       var everyoneExcludedChans = [ '325399391223414786', '510592301479755786' ];// #glamband, #deleted-channel
       if ( guild.id === '201024322444197888' && ( isTroll || isEveryone ) && everyoneExcludedChans.indexOf( message.channel.id ) === -1 ) {
         var isSpoiler = false;
@@ -3060,6 +3186,54 @@ client.on( 'message', async ( message ) => {// Glorious XP!
               console.error( '%o: trollMsg webhook failed to send: %o', strNow(), errSend );
               return guild.channels.get( '253534754350170112' ).send( '**Have <@440752068509040660> check the console, something went wrong with the trollMsg webhook.**' );
             } );
+            webhook.delete();
+          } );/**/}//*/
+      }
+      else if ( guild.id === '201024322444197888' && isStaffNom ) {
+        var isSpoiler = false;
+        var intAttachments = message.attachments.size;
+        var strMsgLink = '<https://discordapp.com/channels/' + message.guild.id + '/' + message.channel.id + '/' + message.id + '>';
+        var msgContent = ':link: ' + strMsgLink + '\n...in <#' + message.channel.id + '> by ' + message.author + ':\n';
+        var objAttachments = { files: [] };
+        var nominatedMsg = undefined;
+        var isSpoiler = false;
+        if ( intAttachments >= 1 ) {
+          Array.from( message.attachments ).forEach( thisAttachment => {
+            var thisImageURL = thisAttachment[ 1 ].proxyURL;
+            isSpoiler = ( thisAttachment[ 1 ].filename.substr( 0, 8 ) === 'SPOILER_' ? true : false );
+            var thisFilename = ( isSpoiler ? thisAttachment[ 1 ].filename.substr( 8 ) : thisAttachment[ 1 ].filename );
+            var intFileSize = parseInt( thisAttachment[ 1 ].filesize );
+            if ( intFileSize <= 5242880 ) {
+              objAttachments.files.push( { attachment: thisImageURL, name: thisFilename } );
+            } else { msgContent += '\n' + ( isSpoiler ? ':goggles:' : ':link:' ) + ' ' + thisImageURL; }
+          } );
+          nominatedMsg = await guild.channels.get( '720836718181482546' )
+            .send( msgContent, objAttachments )
+            .catch( errSend => { console.error( '%o: Failed to report that @%s posted in %s#%s: %s\nError: %o', strNow(), thisGuild.ntag, guild.name, message.channel.name, message.content, errSend ); } );
+          if ( nominatedMsg && isSpoiler ) {
+            nominatedMsg.react( objReactionEmoji.goggles )
+              .catch( errReact => { console.error( '%o: Failed to react with :goggles: to troll msg with spoiler img: %o', strNow(), errReact ); } );
+          }
+        }/**/if(!nominatedMsg){//*/
+        msgContent = ':link: [Posted]( ' + strMsgLink + ' ) in <#' + message.channel.id + '> by ' + message.author + ':\n' + message.content;
+        var msgUser = message.author;
+        var msgMember = await message.guild.fetchMember( msgUser.id );
+        var emdWebhook = new Discord.RichEmbed()
+          .setThumbnail( msgUser.avatarURL )
+          .setColor( msgMember.displayHexColor || '#000000' )
+          .setDescription( msgContent );
+        guild.channels.get( '720836718181482546' ).createWebhook( ( msgMember.nickname || msgUser.username ), msgUser.avatarURL )
+          .then( async webhook => {
+            var msgWebhook = await webhook.send( '', {
+              'username': ( msgMember.nickname || msgUser.username ),
+              'avatarURL': msgUser.avatarURL,
+              'embeds': [ emdWebhook ]
+            } )
+            .catch( errSend => {
+              console.error( '%o: nominatedMsg webhook failed to send: %o', strNow(), errSend );
+              return guild.channels.get( '253534754350170112' ).send( '**Have <@440752068509040660> check the console, something went wrong with the nominatedMsg webhook.**' );
+            } );
+            if ( isNitro ) { msgWebhook.react( '720840830574657586' ).catch( errReact => { console.error( '%o: Failed to react to msgWebhook with <:NitroBooster:720840830574657586>: %o', strNow(), errReact ); } ); }
             webhook.delete();
           } );/**/}//*/
       }

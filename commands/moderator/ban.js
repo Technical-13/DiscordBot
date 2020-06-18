@@ -1,3 +1,4 @@
+const bot = 'LOTRObot';
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
@@ -6,7 +7,6 @@ const objTimeString = {
   hour: 'numeric', minute: 'numeric', second: 'numeric',
   timeZone: 'America/New_York', timeZoneName: 'short' };
 var settings = require( path.join( __dirname, '../../../settings.json' ) );
-const bot = 'LOTRObot';
 
 class BanUser extends commando.Command {
   constructor( client ) {
@@ -42,12 +42,12 @@ class BanUser extends commando.Command {
     
     if ( command === 'banned' || strArgs.toUpperCase() === 'LIST' ) {
       message.guild.fetchBans().then( async colBans => {
-        message.channel.send( '<:banhammer:510515819772379137><:banhammer:510515819772379137>**__List of banned users:__**\n' );
+        message.channel.send( '<:banhammer:256166998331883521> **__List of banned users:__** <:banhammer:256166998331883521>\n' );
         await colBans.forEach( async memberBanned => {
           await message.guild.fetchBan( memberBanned.id ).then( memberBanInfo => {
-            message.channel.send( '\n:name_badge:**Name:** __' +
-              memberBanInfo.user.username + '#' + memberBanInfo.user.discriminator
-              + '__ :id:' + memberBanInfo.user.id +
+            message.channel.send( ':id: ' + memberBanInfo.user.id +
+              ' :name_badge: **Name:** __<@' + memberBanInfo.user.id + '>' +
+              '__ (' + memberBanInfo.user.username + '#' + memberBanInfo.user.discriminator + ')' +
               '\n**Reason:**\n\t' + memberBanInfo.reason.replace( /[\n\r]/g, ' ' ).replace( /(https?:\/\/[^\s]*)/g, '<$1>' ) );
           } );
         } );

@@ -39,7 +39,7 @@ class staffStatus extends commando.Command {
       name: 'staffstatus',
       group: 'moderator',
       memberName: 'staffstatus',
-      description: 'Get the current status of Staff in the LOTROdiscord server',
+      description: 'Get the current status of Staff in the ' + bot.replace( 'bot', '' ) + 'discord server',
     } );
   }
 

@@ -14,7 +14,7 @@ const objTimeString = {
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
   timeZone: 'America/New_York', timeZoneName: 'short' };
-const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
+const strScreenShotPath = path.join( __dirname, '../../images-' + bot.toLowerCase().replace( 'bot', '' ) + '/' );
 var strNow = function () { return ( new Date() ).toLocaleDateString( 'en-US', objTimeString ); };
 const isDebug = true;//settings[ bot ].onError.isDebugMode;
 

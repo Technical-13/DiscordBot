@@ -7,7 +7,7 @@ const objTimeString = { timeZone: 'America/New_York',
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric' };
 var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
-const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
+const strScreenShotPath = path.join( __dirname, '../../images-' + bot.toLowerCase().replace( 'bot', '' ) + '/' );
 const isDebug = settings[ bot ].onError.isDebugMode;
 
 class Soon extends commando.Command {
@@ -22,7 +22,7 @@ class Soon extends commando.Command {
 
   async run( message, args ) {
     message.delete();
-    message.channel.send( { files: [ { attachment: strScreenShotPath + 'SOON.png', name: 'SOON.png' } ] } )
+    message.channel.send( { files: [ { attachment: strScreenShotPath + bot.replace( 'bot', '' ) + '-SOON.png', name: 'SOON.png' } ] } )
 	}
 }
 

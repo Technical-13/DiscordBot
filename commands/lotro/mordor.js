@@ -1,3 +1,4 @@
+const bot = 'LOTRObot';
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 
@@ -5,7 +6,7 @@ class MordorCompare extends commando.Command {
   constructor( client ) {
     super( client, {
       name: 'mordor',
-      group: 'lotro',
+      group: bot.toLowerCase().replace( 'bot', '' ),
       memberName: 'mordor',
       description: 'Mordor expansion option comparisons for The Lord of the Rings Online.',
     } );

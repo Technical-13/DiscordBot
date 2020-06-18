@@ -16,9 +16,9 @@ class ForumPost extends commando.Command {
   constructor( client ) {
     super( client, {
       name: 'forumpost',
-      group: 'lotro',
+      group: bot.toLowerCase().replace( 'bot', '' ),
       memberName: 'forumpost',
-      description: 'Get an embed containing a post from the LotRO forums.',
+      description: 'Get an embed containing a post from the ' + bot.replace( 'bot', '' ) + ' forums.',
     } );
   }
 

@@ -34,6 +34,9 @@ class Poll extends commando.Command {
       var rxp = /<:(.*)?:([\d]*)>/;
       var thisPoll = await message.channel.send( '**POLL:** ' + arrArgs[ 0 ] );
       var r = 1;
+      if ( arrArgs.length === 1 ) {
+        arrArgs.push( '✅' ); arrArgs.push( '❌' ); arrArgs.push( '🔳' ); arrArgs.push( '🤔' ); arrArgs.push( '🤷' );
+      }
       do {
         var reaction = arrArgs[ r ].trim();
         if ( rxp.test( reaction ) ) {

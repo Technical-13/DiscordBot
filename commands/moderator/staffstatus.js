@@ -86,10 +86,12 @@ class staffStatus extends commando.Command {
         var intStaffRatio = .01;
         var intModRatio = .003;
         var intAdminRatio = .001;
+        var intOwnerRatio = .0003;
 
         var intStaff = guild.roles.get( '201710935788748800' ).members.keyArray().length;
         var intMods = guild.roles.get( '201710877143990272' ).members.keyArray().length;
         var intAdmins = guild.roles.get( '201710817614364673' ).members.keyArray().length;
+        var intOwners = guild.roles.get( '240938513598644224' ).members.filter( anOwner => { if ( !anOwner.user.bot ) { return anOwner; } } ).keyArray().length;
 
         var intMembers = guild.memberCount;
         var intBots = 0, intHumans = 0;
@@ -99,9 +101,14 @@ class staffStatus extends commando.Command {
         } );
 
         var strOutput = 'Members: **' + intMembers + '** (bots: __' + intBots + '__; humans: __' + intHumans + '__)';
-        strOutput += '\nStaff: **' + intStaff + '/' + Math.ceil( intMembers * intStaffRatio ) + '**';
-        strOutput += '\nModerators: **' + intMods + '/' + Math.ceil( intMembers * intModRatio ) + '**';
-        strOutput += '\nAdministrators: **' + intAdmins + '/' + Math.ceil( intMembers * intAdminRatio ) + '**';
+        strOutput += '\n(' + ( Math.ceil( 1 / intStaffRatio ) === ( 1 / intStaffRatio ) ? '' : '≈' ) + '1 : ' + Math.ceil( 1 / intStaffRatio ) +
+          ') Staff: **' + intStaff + '/' + Math.ceil( intMembers * intStaffRatio ) + '**';
+        strOutput += '\n(' + ( Math.ceil( 1 / intModRatio ) === ( 1 / intModRatio ) ? '' : '≈' ) + '1 : ' + Math.ceil( 1 / intModRatio ) +
+          ') Moderators: **' + intMods + '/' + Math.ceil( intMembers * intModRatio ) + '**';
+        strOutput += '\n(' + ( Math.ceil( 1 / intAdminRatio ) === ( 1 / intAdminRatio ) ? '' : '≈' ) + '1 : ' + Math.ceil( 1 / intAdminRatio ) +
+          ') Administrators: **' + intAdmins + '/' + Math.ceil( intMembers * intAdminRatio ) + '**';
+        strOutput += '\n(' + ( Math.ceil( 1 / intOwnerRatio ) === ( 1 / intOwnerRatio ) ? '' : '≈' ) + '1 : ' + Math.ceil( 1 / intOwnerRatio ) +
+          ') Owners: **' + intOwners + '/' + Math.ceil( intMembers * intOwnerRatio ) + '**';
 
         message.channel.send( strOutput );
       }

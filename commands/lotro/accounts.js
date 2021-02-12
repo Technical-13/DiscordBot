@@ -38,10 +38,10 @@ class AccountCompare extends commando.Command {
         .setDescription( 'LOTRO\'s **VIP** program offers unlimited access to the majority of LOTRO\'s game content and features and is required for access to the Legendary servers.\n\nThe only content/race/class features not directly available with your VIP subscription and must be purchased separately are:' )
         .addField( '**Expansion packs:**', 
         ':arrow_right: [**`!quadpack`**]( <https://bit.ly/QuadPackLotRO> )\n' +
-        ':arrow_right::arrow_right: [**Mines of Moria**]( <https://bit.ly/MoriaLotRO> )\n' +
-        ':arrow_right::arrow_right: [**Siege of Mirkwood**]( <https://bit.ly/MirkwoodLotRO> )\n' +
-        ':arrow_right::arrow_right: [**Rise of Isengard**]( <https://bit.ly/IsengardLotRO> )\n' +
-        ':arrow_right::arrow_right: [**Riders of Rohan**]( <https://bit.ly/RohanLotRO> )\n' +
+        ':fast_forward: [**Mines of Moria**]( <https://bit.ly/MoriaLotRO> )\n' +
+        ':fast_forward: [**Siege of Mirkwood**]( <https://bit.ly/MirkwoodLotRO> )\n' +
+        ':fast_forward: [**Rise of Isengard**]( <https://bit.ly/IsengardLotRO> )\n' +
+        ':fast_forward: [**Riders of Rohan**]( <https://bit.ly/RohanLotRO> )\n' +
         ':arrow_right: [**Helm\'s Deep**]( <https://bit.ly/HelmsDeepLotRO> )\n' +
         ':arrow_right: [**`!Mordor`**]( <https://bit.ly/MordorLotRO> )\n' +
         ':arrow_right: [**Minas Morgul**]( <https://lotro.com/en/minasithil/> )' )

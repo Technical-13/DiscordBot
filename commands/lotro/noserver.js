@@ -92,28 +92,28 @@ class NoServer extends commando.Command {
     } );
 */
         const strRankedGuild = '201024322444197888';
-        var intAnor = 0, intArk = 1, intBele = 2, intBrandy = 3, intCrick = 4, intEnight = 5,
-          intGlad = 6, intGwaihir = 7, intIthil = 8, intLandy = 9, intLaurie = 10, intSira = 11, intBr = 12;
+        var intAnor = 0, intArk = 1, intBele = 2, intBomb = 3, intBrandy = 4, intCrick = 5, intEnight = 6,
+          intGlad = 7, intGwaihir = 8, intIthil = 9, intLandy = 10, intLaurie = 11, intSira = 12, intBr = 13;
         var lstHomeServers = [
           '506848426768596992', '203267062787866626', // Anor, Arkenstone,
-          '203267155683311616', '203266593394786304', // Belegaer, Brandywine,
-          '203266513640226817', '203267078139019265', // Crickhollow, Evernight,
-          '203266549971156994', '203267133499637760', // Gladden, Gwaihir,
-          '510168607549030430', '203266384451469312', // Ithil, Landroval,
-          '203266569038462977', '203267093372731392', // Laurelin, Sirannon
-          '213328810269999114'  // Bullroarer
+          '203267155683311616', '723193971853230100', // Belegaer, Bombadil,
+          '203266593394786304', '203266513640226817', // Brandywine, Crickhollow,
+          '203267078139019265', '203266549971156994', // Evernight, Gladden,
+          '203267133499637760', '510168607549030430', // Gwaihir, Ithil,
+          '203266384451469312', '203266569038462977', // Landroval, Laurelin,
+          '203267093372731392', '213328810269999114'  // Sirannon, Bullroarer
         ];//*/TEMP
         var lstServers = [
           '506848072077410314', '460569121633992737', // Anor, Arkenstone,
-          '460570446811758602', '460569393693327370', // Belegaer, Brandywine,
-          '460569481652076554', '460570146671689739', // Crickhollow, Evernight,
-          '460569474056323073', '460570361830965269', // Gladden, Gwaihir,
-          '510170073915195397', '460570500717084692', // Ithil, Landroval,
-          '460570587660681226', '460570869341618177', // Laurelin, Sirannon
-          '213328810269999114'  // Bullroarer
+          '460570446811758602', '722903301557059635', // Belegaer, Bombadil,
+          '460569393693327370', '460569481652076554', // Brandywine, Crickhollow,
+          '460570146671689739', '460569474056323073', // Evernight, Gladden,
+          '460570361830965269', '510170073915195397', // Gwaihir, Ithil,
+          '460570500717084692', '460570587660681226', // Landroval, Laurelin,
+          '460570869341618177', '213328810269999114'  // Sirannon, Bullroarer
         ];
-        var fromServer = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
-        var onServer = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+        var fromServer = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+        var onServer = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
         lstServers.forEach( function( svr, ind ) {
           let objServer = message.client.guilds.get( strRankedGuild ).roles.get( svr ).members.array();
           fromServer[ ind ] = objServer.length;
@@ -145,7 +145,7 @@ class NoServer extends commando.Command {
 //              + '\n[<:YouTube:364781557887795200>/]( <https://www.youtube.com/> )'
 //              , true )
             .addField( '**Anor** Discord guilds (with invite links)',
-              '**Future** [(join)](https://discord.gg/N6nY4rU)' )
+              '[**Future**]( <https://discord.gg/N6nY4rU> )' )
             .addField( '**Anor** official forums', '[Forum: Anor](https://www.lotro.com/forums/forumdisplay.php?815-Anor) on the official LotRO Forums.' );
             strServer = 'Anor';
             break;
@@ -154,20 +154,21 @@ class NoServer extends commando.Command {
             .setDescription( '<@&203267062787866626> (#' + ( srtdServers.indexOf( lstServers[ intArk ] ) + 1 ) + ': ' + onServer[ intArk ] + '/' + fromServer[ intArk ] + ' = ' + Math.floor( ( onServer[ intArk ] / fromServer[ intArk ] ) * 100 ) + '%) is the main [PvMP](https://lotro-wiki.com/index.php/PvP) and a popular [Raiding](https://lotro-wiki.com/index.php/Raids)/[Kinship](https://lotro-wiki.com/index.php/Kinship) server with decent <@&278949792481148929>, <@&411255511997087744>, and English/American speaking populations and peak play time being between 7pm-2am Eastern (4-11 Pacific).' )
 //            .addField( '**Arkenstone** specific kinship channels here on LOTROdiscord', '**None**' )
             .addField( '**Arkenstone** specific kinship guilds elsewhere on Discord',
-              '[**One Last Time**](https://discord.gg/dXMFayQ) :arrow_forward: contact: <@430192944960765962> :arrow_right: <@445908693268037633> :arrow_right: <@172802024860155904>'
+              '[**One Last Time**]( <https://discord.gg/dXMFayQ> ) :arrow_forward: contact: <@430192944960765962> :arrow_right: <@445908693268037633> :arrow_right: <@172802024860155904>'
+              + '\n**Kindred Spirits** :arrow_forward: contact: <@290547939967893505> :arrow_right: <@218444507379662849> :arrow_right: <@485838198992535554>'
             )
             .addField( '**Arkenstone** Streamers',
-              ':movie_camera: <@188726074560086018>'//bigedmustafa
-              + '\n:movie_camera: <@212253660099510273>'//icywitch
-              + '\n:movie_camera: <@211473719653171210>'//
+//              ':movie_camera: <@188726074560086018>'//bigedmustafa
+              ':movie_camera: <@212253660099510273>'//icywitch
+//              + '\n:movie_camera: <@211473719653171210>'//
               , true )
             .addField( 'Channel',
-              '[<:Twitch:364781668222894080>/BigEdMustafa]( <https://www.twitch.tv/bigedmustafa> )'
-              + '\n[<:Twitch:364781668222894080>/IcyWitch]( <https://www.twitch.tv/icywitch> )'
-              + '\n[<:YouTube:364781557887795200>/c/Louey7]( <https://www.youtube.com/c/Louey7> )'
+//              '[<:Twitch:364781668222894080>/BigEdMustafa]( <https://www.twitch.tv/bigedmustafa> )'
+              '[<:Twitch:364781668222894080>/IcyWitch]( <https://www.twitch.tv/icywitch> )'
+//              + '\n[<:YouTube:364781557887795200>/c/Louey7]( <https://www.youtube.com/c/Louey7> )'
               , true )
             .addField( '**Arkenstone** Discord guilds (with invite links)',
-              '[**LOTRO Arkenstone**](https://discord.me/Arkenstone) run by <@240208419825385472>' )
+              '[**LOTRO Arkenstone**]( <https://discord.me/Arkenstone> ) by <@240208419825385472>' )
             .addField( '**Arkenstone** official forums', '[Forum: Arkenstone](https://www.lotro.com/forums/forumdisplay.php?113-Arkenstone) on the official LotRO Forums.' );
             strServer = 'Arkenstone';
             break;
@@ -189,11 +190,17 @@ class NoServer extends commando.Command {
             .addField( '**Belegaer** official forums', '[Forum: Belegaer](https://www.lotro.com/forums/forumdisplay.php?577-Belegaer-DE-RP) on the official LotRO Forums.' );
             strServer = 'Belegaer';
             break;
+          case 'BOMB'     :
+          case 'BOMBADIL' : msgEmbed
+            .setDescription( '<@&723193971853230100> (#' + ( srtdServers.indexOf( lstServers[ intBomb ] ) + 1 ) + ': ' + onServer[ intBomb ] + '/' + fromServer[ intBomb ] + ' = ' + Math.floor( ( onServer[ intBomb ] / fromServer[ intBomb ] ) * 100 ) + '%) is the new [PvP](https://lotro-wiki.com/index.php/PvP) __event__ server.' )
+            .addField( '**Bombadil** official forums', '**None** yet on the official LotRO Forums.' );//[Forum: Bombadil](https://www.lotro.com/forums/forumdisplay.php?-Bombadil)
+            strServer = 'Bombadil';
+            break;
           case 'BRANDY'     :
           case 'BRANDYWINE' : msgEmbed
             .setDescription( '<@&203266593394786304> (#' + ( srtdServers.indexOf( lstServers[ intBrandy ] ) + 1 ) + ': ' + onServer[ intBrandy ] + '/' + fromServer[ intBrandy ] + ' = ' + Math.floor( ( onServer[ intBrandy ] / fromServer[ intBrandy ] ) * 100 ) + '%) is a fairly high poplation diverse server ([PvMP](https://lotro-wiki.com/index.php/PvP), Raiding, RP, and music events) with decent <@&278949792481148929> and English/American speaking populations.' )
             .addField( '**Brandywine** specific kinship guilds elsewhere on Discord',
-              '[**Casual Raiders**](https://discord.gg/zMXJG8V) :arrow_forward: contact: <@221885276950102017>' +
+              '[**Casual Raiders**]( <https://discord.gg/rDD46yd> ) :arrow_forward: contact: <@221885276950102017>' +
               '\n**Riders of Middle Earth** :arrow_forward: contact: <@313034997193900034>' +
               '\n**White Company** :arrow_forward: contact: <@122513674731520000> :arrow_forward: <@141764628580401152> :arrow_forward: <@211550181844320258>'
             )
@@ -328,20 +335,21 @@ class NoServer extends commando.Command {
               + '\n[<:Twitch:364781668222894080>/Technical_13](https://www.twitch.tv/technical_13)'
               + '\n[<:Twitch:364781668222894080>/zerocracy](https://www.twitch.tv/zerocracy)'
               , true )
-            .addField( '**Landroval** Discord guilds (with invite links)', '**None**' )
-            .addField( '**Landroval** official forums', '[Forum: Landroval](https://www.lotro.com/forums/forumdisplay.php?81-Landroval-EN-RE) on the official LotRO Forums.' );
+            .addField( '**Landroval** Discord guilds (with invite links)',
+              '[Landroval\'s Allies]( <https://discord.me/LandrovalsAllies> ) by <@564221720257495041>' )
+            .addField( '**Landroval** official forums', '[Forum: Landroval]( <https://www.lotro.com/forums/forumdisplay.php?81-Landroval-EN-RE> ) on the official LotRO Forums.' );
             strServer = 'Landroval';
             break;
           case 'LAURIE'   :
           case 'LAURELIN' : msgEmbed
-            .setDescription( '<@&203266569038462977> (#' + ( srtdServers.indexOf( lstServers[ intLaurie ] ) + 1 ) + ': ' + onServer[ intLaurie ] + '/' + fromServer[ intLaurie ] + ' = ' + Math.floor( ( onServer[ intLaurie ] / fromServer[ intLaurie ] ) * 100 ) + '%) is a fairly well populated at all times of day [RP](https://lotro-wiki.com/index.php/Roleplaying) server.' )
+            .setDescription( '<@&203266569038462977> (#' + ( srtdServers.indexOf( lstServers[ intLaurie ] ) + 1 ) + ': ' + onServer[ intLaurie ] + '/' + fromServer[ intLaurie ] + ' = ' + Math.floor( ( onServer[ intLaurie ] / fromServer[ intLaurie ] ) * 100 ) + '%) is a fairly well populated at all times of day [RP](https://lotro-wiki.com/index.php/Roleplaying) server.  As an RP server, the playerbase seems to be more casual and less endgame focused.' )
             .addField( '**Laurelin** specific kinship channels here on LOTROdiscord',
     //          '<@&305119078153191425> lead by <@215766751785254913> and hosted in the <#305120082453987329> channel.\n' +
               'none at this time.' )
             .addField( '**Laurelin** specific kinship guilds elsewhere on Discord',
-              '[**Brothers In Arms**](https://discord.gg/GMQPvJK) :arrow_forward: contacts: Timitost :arrow_forward: <@306246281112846339>' +
-              '\n[**The Battalion**](https://discord.gg/KGc8Ad) :arrow_forward: contacts: <@242332874991206400> :arrow_forward: <@477902018124447767> :arrow_right: <@492356211237453834>' +
-              '\n[**Uialtum**](https://discord.me/uialtum) :arrow_forward: contacts: <@373269927865483264> :arrow_forward: <@166902969030279178> :arrow_right: <@484082181510004756>'
+              '[**Brothers In Arms**]( <https://discord.gg/GMQPvJK> ) :arrow_forward: contacts: Timitost :arrow_forward: <@306246281112846339>' +
+//              '\n[**The Battalion**]( <https://discord.gg/KGc8Ad> ) :arrow_forward: contacts: <@242332874991206400> :arrow_forward: <@477902018124447767> :arrow_right: <@492356211237453834>' +// Contact made with #2 on 2020/07/22
+              '\n[**Uialtum**]( <https://discord.gg/PtDepvQ> ) :arrow_forward: contacts: <@373269927865483264> :arrow_forward: <@166902969030279178> :arrow_right: <@484082181510004756>'// Formerly <https://discord.me/uialtum>
             )
             .addField( '**Laurelin** Streamers',
               ':movie_camera: <@243357556162953218>'// Bryn
@@ -349,13 +357,14 @@ class NoServer extends commando.Command {
               + '\n:movie_camera: <@440752068509040660>'// Technical_13
               , true )
             .addField( 'Channel',
-              '[<:Twitch:364781668222894080>/vickyoflotro](https://www.twitch.tv/vickyoflotro)'
+              '[<:Twitch:364781668222894080>/vickyoflotro]( <https://www.twitch.tv/vickyoflotro> )'
 //              + '\n[<:Twitch:364781668222894080>/asathrorr__eriadan](https://www.twitch.tv/asathrorr__eriadan)'
-              + '\n[<:Twitch:364781668222894080>/Technical_13](https://www.twitch.tv/technical_13)'
+              + '\n[<:Twitch:364781668222894080>/Technical_13]( <https://www.twitch.tv/technical_13> )'
               , true )
             .addField( '**Laurelin** Discord guilds (with invite links)',
-              '[Laurelin RP Community](https://discord.gg/aK7JmpK)\n' +
-              '[Laurelin RP Group](https://discord.gg/z72t34W) by <@243357556162953218>\n' )
+              '[Laurelin Gateway]( <https://discord.me/LaurelinGateway> ) by <@318133307508391938>' +// <https://discord.gg/6cnCek3>
+              '\n[Laurelin RP Community]( <https://discord.gg/aK7JmpK> )' +
+              '\n[Laurelin RP Group]( <https://discord.gg/z72t34W> ) by <@243357556162953218>' )
             .addField( '**Laurelin** official forums', '[Forum: Laurelin](https://www.lotro.com/forums/forumdisplay.php?539-Laurelin-EN-RP) on the official LotRO Forums.' )
             .addField( '**Laurelin Archives**', 'Do you like to RP outside of the game and share stories?  Maybe the [Laurelin RolePlaying forum](http://laurelinarchives.org/) is for you!  Check it out!' );
             strServer = 'Laurelin';
@@ -388,9 +397,10 @@ class NoServer extends commando.Command {
             .addField( 'Anor (#' + ( srtdServers.indexOf( lstServers[ intAnor ] ) + 1 ) + ': ' + onServer[ intAnor ] + '/' + fromServer[ intAnor ] + ' = ' + Math.floor( ( onServer[ intAnor ] / fromServer[ intAnor ] ) * 100 ) + '%)', '<@&506848426768596992> is the first [Legendary](https://lotro-wiki.com/index.php/Legendary_Server_Announcement) LotRO server.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Anor`' )// Anor
             .addField( 'Arkenstone (#' + ( srtdServers.indexOf( lstServers[ intArk ] ) + 1 ) + ': ' + onServer[ intArk ] + '/' + fromServer[ intArk ] + ' = ' + Math.floor( ( onServer[ intArk ] / fromServer[ intArk ] ) * 100 ) + '%)', '<@&203267062787866626> is the main [PvMP](https://lotro-wiki.com/index.php/PvP) and a popular [Raiding](https://lotro-wiki.com/index.php/Raids)/[Kinship](https://lotro-wiki.com/index.php/Kinship) server with decent <@&278949792481148929> and English/American speaking populations and peak play time being between 7pm-2am Eastern (4-11 Pacific).  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Arkenstone`' )// Arkenstone
             .addField( 'Belegaer (#' + ( srtdServers.indexOf( lstServers[ intBele ] ) + 1 ) + ': ' + onServer[ intBele ] + '/' + fromServer[ intBele ] + ' = ' + Math.floor( ( onServer[ intBele ] / fromServer[ intBele ] ) * 100 ) + '%)', '<@&203267155683311616> is a primarily <@&206386014648926208> speaking mature [RP](https://lotro-wiki.com/index.php/Roleplaying) server.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Belegaer`' )// Belegaer
+            .addField( 'Bombadil (#' + ( srtdServers.indexOf( lstServers[ intBomb ] ) + 1 ) + ': ' + onServer[ intBomb ] + '/' + fromServer[ intBomb ] + ' = ' + Math.floor( ( onServer[ intBomb ] / fromServer[ intBomb ] ) * 100 ) + '%)', '<@&723193971853230100> (#' + ( srtdServers.indexOf( lstServers[ intBomb ] ) + 1 ) + ': ' + onServer[ intBomb ] + '/' + fromServer[ intBomb ] + ' = ' + Math.floor( ( onServer[ intBomb ] / fromServer[ intBomb ] ) * 100 ) + '%) is the new [PvP](https://lotro-wiki.com/index.php/PvP) __event__ server.' )// Bombadil
             .addField( 'Brandywine (#' + ( srtdServers.indexOf( lstServers[ intBrandy ] ) + 1 ) + ': ' + onServer[ intBrandy ] + '/' + fromServer[ intBrandy ] + ' = ' + Math.floor( ( onServer[ intBrandy ] / fromServer[ intBrandy ] ) * 100 ) + '%)', '<@&203266593394786304> is a fairly high poplation diverse server ([PvMP](https://lotro-wiki.com/index.php/PvP), Raiding, RP, and music events) with decent <@&278949792481148929> and English/American speaking populations.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Brandywine`' )// Brandywine
             .addField( 'Crickhollow (#' + ( srtdServers.indexOf( lstServers[ intCrick ] ) + 1 ) + ': ' + onServer[ intCrick ] + '/' + fromServer[ intCrick ] + ' = ' + Math.floor( ( onServer[ intCrick ] / fromServer[ intCrick ] ) * 100 ) + '%)', '<@&203266513640226817> is a relatively low population casual questing kinship server that sports an active music and special events community.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Crickhollow`' )// Crickhollow
-            .addField( 'Evernight (#' + ( srtdServers.indexOf( lstServers[ intEnight ] ) + 1 ) + ': ' + onServer[ intEnight ] + '/' + fromServer[ intEnight ] + ' = ' + Math.floor( ( onServer[ intEnight ] / fromServer[ intEnight ] ) * 100 ) + '%)', '<@&203267078139019265> is a well populated mostly English/American speaking European server.  For more details, please visit <#201689631861899264> and type `!noserver Evernight`' )// Evernight
+            .addField( 'Evernight (#' + ( srtdServers.indexOf( lstServers[ intEnight ] ) + 1 ) + ': ' + onServer[ intEnight ] + '/' + fromServer[ intEnight ] + ' = ' + Math.floor( ( onServer[ intEnight ] / fromServer[ intEnight ] ) * 100 ) + '%)', '<@&203267078139019265> is a well populated mostly English/American speaking European server.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Evernight`' )// Evernight
             .addField( 'Gladden (#' + ( srtdServers.indexOf( lstServers[ intGlad ] ) + 1 ) + ': ' + onServer[ intGlad ] + '/' + fromServer[ intGlad ] + ' = ' + Math.floor( ( onServer[ intGlad ] / fromServer[ intGlad ] ) * 100 ) + '%)', '<@&203266549971156994> is a casual, mostly English/American server with peak times between 2-11pm Eastern (11am-8pm Pacific).  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Gladden`' )// Gladden
             .addField( 'Gwaihir (#' + ( srtdServers.indexOf( lstServers[ intGwaihir ] ) + 1 ) + ': ' + onServer[ intGwaihir ] + '/' + fromServer[ intGwaihir ] + ' = ' + Math.floor( ( onServer[ intGwaihir ] / fromServer[ intGwaihir ] ) * 100 ) + '%)', '<@&203267133499637760> is a primarily <@&206386014648926208> speaking server.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Gwaihir`' )// Gwaihir
             .addField( 'Ithil (#' + ( srtdServers.indexOf( lstServers[ intIthil ] ) + 1 ) + ': ' + onServer[ intIthil ] + '/' + fromServer[ intIthil ] + ' = ' + Math.floor( ( onServer[ intIthil ] / fromServer[ intIthil ] ) * 100 ) + '%)', '<@&510168607549030430> is the second [Legendary](https://lotro-wiki.com/index.php/Legendary_Server_Announcement) LotRO server created in response to an overwhelming wait queue for <@&506848426768596992> when it first opened.  For more details, please ' + ( message.channel.id === '637272044056084480' ? '' : 'visit <#201689631861899264> and ' ) + 'type `!noserver Ithil`' )// Ithil

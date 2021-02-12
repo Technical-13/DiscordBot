@@ -299,7 +299,7 @@ class Specials extends commando.Command {
         message.delete( 12000 ).catch( errDel => { console.error( strNow() + ': Failed to delete `!' + strAlias + ( strCommand ? ' ' + strCommand + ( strElement ? ' ' + strElement + ( arrParameters.length > 0 ? ' ' + arrParameters.join( ' ' ) : '' ) : '' ) : '' ) + '` request: ' + errDel ); } );
         strUpdaters = ( objUpdated.setAuthorID === objUpdated.conAuthorID ? objUpdated.setAuthorName : objUpdated.setAuthorName + ' & ' + objUpdated.conAuthorName );
         var msgEmbed = new Discord.RichEmbed()
-      .setTitle( strPeriodicalName + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
+          .setTitle( strPeriodicalName + ( objSpecials.issue ? ': Issue ' + objSpecials.issue : '' ) )
           .setURL( objSpecials.URI )
           .setColor( '#234290' )
           .setImage( objSpecials.image || strDefaultImage )

@@ -37,10 +37,11 @@ class Install extends commando.Command {
           {
             name: 'PC client',
             value: ':small_blue_diamond: [Microsoft Visual C++ 2005 Service Pack 1 Redistributable Package MFC Security Update]( <https://www.microsoft.com/en-us/download/details.aspx?id=26347> )\n' +
+              ':small_blue_diamond: [Microsoft Visual C++ 2010 Redistributable Package (x86)]( <https://www.microsoft.com/en-us/download/details.aspx?id=8328> )\n' +
               ':small_blue_diamond: [Microsoft Visual C++ 2010 Redistributable Package (x64)]( <https://www.microsoft.com/en-us/download/details.aspx?id=14632> )\n' +
               ':large_blue_diamond: DirectX v9:\n' +
               ':small_blue_diamond::small_orange_diamond: Windows 10: [Download DirectX 9.29.1974 End-User Runtimes (June 2010)]( <https://www.microsoft.com/en-us/download/details.aspx?id=8109> )\n' +
-              ':small_blue_diamond::small_orange_diamond: Earlier: [Download DirectX 9.0c End-User Runtime]( <https://www.microsoft.com/en-us/download/confirmation.aspx?id=34429> )\n' +
+              ':small_blue_diamond::small_orange_diamond: Earlier: [Download DirectX 9.0c End-User Runtime]( <http://www.oldversion.com/windows/directx-9-0c> )\n' +
               ':small_blue_diamond: [Download LotRO Client]( <http://content.turbine.com/sites/clientdl/lotro/lotrolive.exe> )'
           },
           {
@@ -50,7 +51,7 @@ class Install extends commando.Command {
         ],
         timestamp: new Date(),
         footer : {
-          text: 'Updated: 2017-08-08.'
+          text: 'Updated: 2020-12-28.'
         }
       }
 		} );

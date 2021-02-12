@@ -14,7 +14,7 @@ class RegisterLotROShots extends commando.Command {
   async run( message, args ) {
     var arrAuthorRoles = message.guild.members.get( message.author.id )._roles;
 		if ( message.channel.id === '335765066727030786' || arrAuthorRoles.indexOf( '335764864410845185' ) !== -1 ) {
-			message.channel.send( 'You can register for lotroshots! Please visit: <http://www.shots.lotrokin.me/register.php>' );
+			message.channel.send( 'You can register for lotroshots! Please visit: <https://www.lotroshots.net/register.php>' );
 		}
   }  
 }

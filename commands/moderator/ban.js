@@ -14,24 +14,24 @@ class BanUser extends commando.Command {
       name: 'ban',
       group: 'moderator',
       memberName: 'ban',
-      aliases: [ 'banned' ],
+      aliases: [ 'banned', 'unban' ],
       format: '@User [, @User, <@UserID>, ...] [days to delete] [Ban reason]',
       description: 'Command for guild Administrators to easily ban a member.'
     } );
   }
 
   async run( message, strArgs ) {
-    var command = message.content.split( ' ' )[ 0 ].substr( 1 );
+    var arrArgs = message.content.split( ' ' );
+    var command = arrArgs[ 0 ].substr( 1 );
+    var arrBanList = strArgs.match( /<@!?(\d*)>/g );
+    var intToBan = ( arrBanList == null ? 0 : ( arrBanList.length ) );
+    console.log( 'command: %o\t\tarrArgs: %o\nintToBan: %i\t\tarrBanList: %o', command, arrArgs, intToBan, arrBanList );
     var isOwner = await ( settings[ bot ].owners.indexOf( message.author.id ) !== -1 ? true : false );
-    var objAdminRoles = [];
-    var isCrown = false;
-    var isAdmin = false;
+    var objAdminRoles = [], isCrown = false, isAdmin = false;
     if ( message.guild ) {
       isCrown = ( message.author.id === message.guild.owner.user.id ? true : false );
       message.guild.roles.array().forEach( function( role, index ) {
-        if ( ( new Discord.Permissions( role.permissions ) ).has( 8 ) ) {
-          objAdminRoles.push( role );
-        }
+        if ( ( new Discord.Permissions( role.permissions ) ).has( 8 ) ) { objAdminRoles.push( role ); }
       } );
       objAdminRoles.forEach( function( role, index ) {
         if ( ( role.members.keyArray() ).indexOf( message.author.id ) !== -1 || message.author.id === message.guild.ownerID ) {
@@ -39,18 +39,20 @@ class BanUser extends commando.Command {
         }
       } );
     }
-    
+
     if ( command === 'banned' || strArgs.toUpperCase() === 'LIST' ) {
-      message.guild.fetchBans().then( async colBans => {
-        message.channel.send( '<:banhammer:256166998331883521> **__List of banned users:__** <:banhammer:256166998331883521>\n' );
-        await colBans.forEach( async memberBanned => {
-          await message.guild.fetchBan( memberBanned.id ).then( memberBanInfo => {
-            message.channel.send( ':id: ' + memberBanInfo.user.id +
-              ' :name_badge: **Name:** __<@' + memberBanInfo.user.id + '>' +
-              '__ (' + memberBanInfo.user.username + '#' + memberBanInfo.user.discriminator + ')' +
-              '\n**Reason:**\n\t' + memberBanInfo.reason.replace( /[\n\r]/g, ' ' ).replace( /(https?:\/\/[^\s]*)/g, '<$1>' ) );
-          } );
+      var arrMessages = [];
+      message.guild.fetchBans().then( colBans => {
+        colBans.forEach( async memberBanned => {
+          var memberBanInfo = await message.guild.fetchBan( memberBanned.id );
+          arrMessages.push(
+            ':id: ' + memberBanInfo.user.id +' :name_badge: **Name:** __<@' + memberBanInfo.user.id + '>' +
+            '__ (' + memberBanInfo.user.username + '#' + memberBanInfo.user.discriminator + ')' +
+            '\n**Reason:**\n\t' + memberBanInfo.reason.replace( /[\n\r]/g, ' ' ).replace( /(https?:\/\/[^\s]*)/g, '<$1>' )
+          );
         } );
+        message.channel.send( '<:banhammer:256166998331883521> **__List of ' + arrMessages.length + ' banned users:__** <:banhammer:256166998331883521>\n' );
+        arrMessages.forEach( ( intMM, mbrMsg ) => { message.channel.send( intMM + ': length: ' + mbrMsg.length ); } );      
       } );
       message.delete( { reason: 'Cleaning up request from ' + message.author.tag + ' to list banned members.' } ).catch( delError => { console.log( 'Unable to delete ' + message.author.tag + '\'s request to list banned members in ' + message.guild.id + '#' + message.channel.id + ' (' + message.guild.name + '#' + message.channel.name + ')' ); } );
     }
@@ -68,9 +70,6 @@ class BanUser extends commando.Command {
       }
       if ( isOwner || isCrown || isAdmin || isMod ) {
         var arrUnbannable = [];
-        var arrArgs = strArgs.split( ' ' );
-        var arrBanList = strArgs.match( /<@!?(\d*)>/g );
-        var intToBan = ( arrBanList == null ? 0 : ( arrBanList.length ) );
         if ( intToBan >= 1 ) {
           var intReqDel = parseInt( arrArgs[ intToBan ] );
           var boolDaysSet = ( isNaN( intReqDel ) ? false : true );

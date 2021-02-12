@@ -634,8 +634,11 @@ class BotConfig extends commando.Command {
           if ( ( isBotMod || isCrown || isAdministrator || canManageServer ) && intArgs > 1 ) {
             let hasMention = false, toModDemod = null;
             if ( intArgs > 2 ) {
-              hasMention = ( arrArgs[ 2 ].match( /<@!?(\d*)>/ ) ? true : false );console.log('hasMention: %o',hasMention);
-              toModDemod = await guild.members.get( arrArgs[ 2 ].match( /<@!?(\d+)>/ )[ 1 ] );console.log('toModDemod.id: %o',toModDemod.id);
+              var mentionID = arrArgs[ 2 ].match( /<@!?(\d*)>/ )[ 1 ];console.log('mentionID: %o',mentionID);
+              hasMention = ( !isNaN( mentionID ) ? true : false );console.log('hasMention: %o',hasMention);
+              if ( hasMention ) {console.log('Getting member: %o',mentionID);
+                toModDemod = await guild.fetchMember( mentionID );console.log('toModDemod.id: %o',toModDemod.id);
+              }
             }
             switch ( arrArgs[ 1 ].toLowerCase() ) {
               case 'get' : case 'list' :

@@ -41,7 +41,7 @@ class ForumPost extends commando.Command {
       staffRole = await message.guild.roles.get( '201710935788748800' );
       isStaff = await ( staffRole && ( staffRole.members.keyArray() ).indexOf( message.author.id ) !== -1 ? true : false );
     }
-if ( isOwner || isBotMod ) {
+if ( isOwner || isBotMod || isCrown || isAdmin || isStaff ) {
     const arrArgs = args.split( ' ' );console.log( '%s: `!forumpost` fired: %o', strNow, arrArgs );
     var intPostId = parseInt( arrArgs[ 0 ] );
     message.delete( { reason: 'Cleaning up request for forum post.' } ).catch( errDel => { console.log( 'Unable to delete ' + message.author.tag + '\'s message in ' + message.guild.name + '#' + message.channel.name + ' at ' + ( new Date() ).toLocaleDateString( 'en-US', objTimeString ) + ': ' + errDel ); } );
@@ -123,6 +123,8 @@ if ( isOwner || isBotMod ) {
             .replace( /<\/?i>/gi, '*' )
             .replace( /<\/?u>/gi, '__' )
             .replace( /<a href="(.*?)"(?:.*?)?>(.*?)<\/a>/gi, '[$2]($1)' )
+            .replace( /<font color="(?:.*?)">(.*?)<\/font>/gi, '$1' )
+            .replace( /<img src="(.*?)"(?:.*?)>/gi, '[image]($1)' )
         };
       }
       

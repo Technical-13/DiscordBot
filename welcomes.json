@@ -1,0 +1,22 @@
+{
+	"201024322444197888":{
+		"name":"Unofficial Lord of the Rings Online Discord",
+		"channel":"201024322444197888",
+		"message":"The official **{server}** welcomes {user}**#**{discriminator} and asks them to check out the <#201689445320228864> channel and notify `@Staff #server [#server...] [#other roles]` in this channel."
+	},
+	"203325138601508866":{
+		"name":"LotRO-wiki",
+		"channel":"203325138601508866",
+		"message":"Welcome to the Discord server for **{server}** {user} (- @{tag} -).  Please indicate if you are an editor of {server} by linking your username (- Example `!wuser Example` -).  If you\'re not an editor, please indicate you\'re a reader by typing `%roleme Reader`.  Thanks and welcome to the server!!!"
+	},
+	"201667758893563905":{
+		"name":"LotROstream",
+		"channel":"201667758893563905",
+		"message":"{user}, Welcome to the **{server}** Discord server!  You can find out what show each host does by typing the (case sensitive) name of the host preceeded by a bang (!).  For example, to see what shows `@Cordovan` hosts, type `!Cordovan` in the <#201667758893563905> channel."
+	},
+	"217263579080949760":{
+		"name":"IcyWitchplays"
+		"channel":"217263579080949760",
+		"message":"{user}, Welcome to **{server}**!  Have a great time here :wink:!"
+	}
+}

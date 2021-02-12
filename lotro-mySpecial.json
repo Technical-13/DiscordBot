@@ -1,7 +1,7 @@
 {
-	"issue": 164,
-	"URI": "https://www.lotro.com/en/game/articles/lotro-beacon-issue-164",
-	"image": "https://web.archive.org/web/20200612181754im_/https://www.lotro.com/sites/default/files/beacon164headerEN.png",
+	"issue": 168,
+	"URI": "https://www.lotro.com/en/game/articles/lotro-beacon-issue-168",
+	"image": "https://www.lotro.com/sites/default/files/beacon168headerEN.png",
 	"bonusDays": [
 		{
 			"ends": "2020-09-01T03:00:00Z",
@@ -9,14 +9,9 @@
 			"value": ":small_blue_diamond: [**FREE CONTENT**]( <https://www.lotro.com/en/friendsforever> ) (through 8/31)"
 		},
 		{
-			"ends": "2020-07-01T03:00:00Z",
-			"name": "**World Character Transfers**:",
-			"value": "**Character Transfers** are possible once again!\nGet more information with `!transfers [en|fr|de]`\n<:StandingStoneGames:342663018586308632> *(please use an off-topic/spam channel)*"
-		},
-		{
-			"ends": "2020-06-15T03:00:00Z",
-			"name": "LOTRO Bonus Days bring you...",
-			"value": ":large_blue_diamond: **+20% Virtue XP Boost** now through June 14th!**"
+			"ends": "2020-07-21T03:00:00Z",
+			"name": "The **Midsummer Festival**...",
+			"value": "...is now underway! The festival runs through July 20th."
 		}
 	],
 	"freebies": [
@@ -32,15 +27,15 @@
 			"week": "...through August 31st"
 		},
 		{
-			"ends": "2020-06-19T03:00:00Z",
-			"code": "HOUROFSLAY",
+			"ends": "2020-07-24T03:00:00Z",
+			"code": "TACTMIT25",
 			"title": "Weekly Coupon",
 			"item": {
-				"name": "Slayer Deed Accelerator (60 minutes)",
-				"link": "https://lotro-wiki.com/index.php/Item%3ASlayer_Deed_Accelerator_(60_min)"
+				"name": "Tactical Mitigation Tome (90min)",
+				"link": "https://lotro-wiki.com/index.php/LOTRO_Store#Combat_Buffs"
 			},
-			"quantity": 1,
-			"week": "June 12th - 18th"
+			"quantity": 25,
+			"week": "July 16th - 23rd"
 		}
 	],
 	"sales": [
@@ -50,9 +45,23 @@
 			"value": [ "[**Friends Forever**]( <https://www.lotro.com/en/friendsforever> )" ]
 		},
 		{
-			"ends": "2020-06-19T03:00:00Z",
-			"name": "Relive your Favorite Chapters! — Get 20% off through June 18th:",
-			"value": [ "Gift of the Valar and Blessing of the Valar", "3rd Age Item Drove", "Legacy Scroll Box" ]
+			"ends": "2020-07-24T03:00:00Z",
+			"name": "**Prepare for Battle!** — Get 25% off through July 23rd:",
+			"value": [
+				"Stat Tomes",
+				"Regeneration Food",
+				"Run Speed Boosts",
+				"Attack Damage Boosts"
+			]
+		},
+		{
+			"ends": "2020-07-24T03:00:00Z",
+			"name": "**Summer Sales** this week bring you:",
+			"value": [
+				"35% off Account Wide Mounts",
+				"50% off [High Elf]( <https://lotro-wiki.com/index.php/High_Elf> ) and [Beorning]( <https://lotro-wiki.com/index.php/Beorning> )",
+				"75% off [Premium Wallet]( <https://lotro-wiki.com/index.php/Wallet#Premium_Wallet> )"
+			]
 		}
 	]
 }

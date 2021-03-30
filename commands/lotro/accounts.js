@@ -20,7 +20,7 @@ class AccountCompare extends commando.Command {
 
   async run( message, args ) {
     var msgAttachment = [];
-    var msgEmbed = new Discord.RichEmbed()
+    var msgEmbed = new Discord.MessageEmbed()
       .setTitle( 'Account type comparison help' )
       .setURL( 'https://lotro-wiki.com/index.php/Account_Types#Account_type_comparison_table' )
       .setColor( '#234290' )

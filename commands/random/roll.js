@@ -8,6 +8,7 @@ class DiceRollCommand extends commando.Command {
       memberName: 'roll',
       description: 'An advanced command to roll dice.',
       format: '{Sets}#{Number}d{Sides}[+|-][Modifier]',
+      aliases: [ 'd', 'dice', 'r', 'random' ],
       details: '\n:game_die: `{Sets}` is the number of times to roll `{Number}d{Sides}[+|-][Modifier]`\n:game_die: `{Number}` is the number of dice to roll & defaults to 1 if omitted.\n:game_die: `{Sides}` is the number of sides per dice & defaults to 6 if omitted. - If {Number} * {Sides} > 9999999999 !roll will "overflow" (you will roll a 0).\n:game_die: `[+|-][Modifier]` is the number to be added or subtracted to the outcome of the roll total. Ommitted if not a number.'
     } );
   }

@@ -1,4 +1,3 @@
-const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 
 class LetMeGoogle extends commando.Command {
@@ -7,13 +6,21 @@ class LetMeGoogle extends commando.Command {
       name: 'lmgtfy',
       group: 'random',
       memberName: 'lmgtfy',
-      description: 'Let Me Google That For You!'
+      description: 'Let Me Google That For You!',
+      aliases: [ 'lmgt' ]
     } );
   }
 
-  async run( message, args ) {
+  run( message, args ) {
+    var prefix = message.guild.client.commandPrefix;
+    var msg = message.content;
+    var service = msg.split( ' ' )[ 0 ].split( prefix )[ 1 ].toLowerCase();
     var q = encodeURI( args.replace( / /g, '+' ) );
-		message.channel.send( '<https://lmgtfy.com/?q=' + q + '>' );
+    if ( service === 'lmgt' ) {
+		  message.channel.send( '<https://letmegooglethat.com/?q=' + q + '>' );
+    } else {
+		  message.channel.send( '<https://lmgtfy.com/?q=' + q + '>' );
+    }
 	}
 }
 

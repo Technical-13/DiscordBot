@@ -17,8 +17,6 @@ class JustAsk extends commando.Command {
   
   async run( message, args ) {
     message.delete().catch( errDel => { console.error( '%s: Error attempting to delete message: %o', strNow, errDel ); } );
-    var strArgs = args;
-    var arrArgs = args.split( ' ' );
     var strMentions = '';
     if ( message.mentions.members.size >= 1 ) {
       var arrMentions = message.mentions.members.array();

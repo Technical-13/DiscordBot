@@ -1,7 +1,7 @@
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
-const settings = require( path.join( __dirname, '../../../settings.json' ) );
+//const settings = require( path.join( __dirname, '../../../settings.json' ) );
 const objTimeString = {
   year: 'numeric', month: 'long', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
@@ -22,8 +22,8 @@ class AboutMe extends commando.Command {
     const strOrdinalEmoji = [ 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'keycap_ten' ];// basic 0-9 and then "10"
     var response = await message.channel.send( 'Collecting data for your query, please stand by...' );
     var arrArgs = args.split( ' ' ),
-      arrMyRoles = message.guild.members.get( message.client.user.id )._roles,
-      dateJoinedTimestamp = new Date( message.guild.members.get( message.client.user.id ).joinedTimestamp ),
+      arrMyRoles = message.guild.members.cache.get( message.client.user.id )._roles,
+      dateJoinedTimestamp = new Date( message.guild.members.cache.get( message.client.user.id ).joinedTimestamp ),
       intGuildsList = 0,
       intGuilds = 0,
       intGuildIndex = 0,
@@ -54,7 +54,7 @@ class AboutMe extends commando.Command {
       objUptime.days    = ( Math.floor( objUptime.base / 86400 ) % 7 );
       objUptime.weeks   = ( Math.floor( objUptime.base / 604800 ) % 4 );
     if ( !message.guild.large ) {
-      await message.guild.members.forEach( function( member, intMemberIndex ) {
+      await message.guild.members.cache.forEach( function( member, intMemberIndex ) {
         if ( member.user.bot ){
           intBots++;
         } else {
@@ -62,7 +62,7 @@ class AboutMe extends commando.Command {
         }
       } );
     } else {// HORRIBLE HACK -- FIX THIS LATER
-      await message.guild.members.forEach( function( member, intMemberIndex ) {
+      await message.guild.members.cache.forEach( function( member, intMemberIndex ) {
         if ( member.user.bot ){
           intBots++;
         }
@@ -74,20 +74,20 @@ class AboutMe extends commando.Command {
       strBotType = 'In case you didn\'t know, I\'m a ' +
         ( message.client.user.bot ? ':robot: robot' : ':bust_in_silhouette: human' ) + '.\n',
       strDebugServer = 'You can track changes to the bot in my [debugging server](<https://discord.me/TheShoeStore>).\n',
-      strInviteMe = 'You can add me to your own server(s): [Invite Me!](https://discordapp.com/api/oauth2/authorize?client_id=' + settings[ bot ].clientID + '&scope=bot&permissions=8)\n',
-      strOwner = 'My owner' + ( settings[ bot ].owners.length === 1 ? ' is ' : 's are ' ),
-      await settings[ bot ].owners.forEach( async function( ownerID, i ){
+      strInviteMe = 'You can add me to your own server(s): [Invite Me!](https://discordapp.com/api/oauth2/authorize?client_id=' + message.client.user.id + '&scope=bot&permissions=8)\n',
+      strOwner = 'My owner' + ' is <@' +message.client.owner+ '>.', /*( message.client.owners.length === 1 ? ' is ' : 's are ' ),
+      await message.client.owners.forEach( async function( ownerID, i ){
         var owner = await message.client.fetchUser( ownerID );
         strOwner += owner + ' (' + owner.tag + ')';
-        if ( settings[ bot ].owners.length > 2 && i < settings[ bot ].owners.length ) {
+        if ( message.client.owners.length > 2 && i < message.client.owners.length ) {
           strOwner += ', ';
-        } else if ( settings[ bot ].owners.length > 2 && i === settings[ bot ].owners.length ) {
+        } else if ( message.client.owners.length > 2 && i === message.client.owners.length ) {
           strOwner += ', and ';
-        } else if ( settings[ bot ].owners.length === 2 ) {
+        } else if ( message.client.owners.length === 2 ) {
           strOwner += ' and ';
         }
       } ),
-      strOwner += '.\n',
+      strOwner += '.\n',//*/
       strLastRestart = 'I\'ve been online ' +
         ( objUptime.weeks !== 0 ? '**' + objUptime.weeks + '**w ' : '' ) +
         ( objUptime.days !== 0 ? '**' + objUptime.days + '**d ' : '' ) +
@@ -99,7 +99,7 @@ class AboutMe extends commando.Command {
       intGuildsList = 3,
       intTopIndex = ( intGuilds < intGuildsList ? intGuilds : intGuildsList ),
       strGuildsValue = ' ',
-      await message.client.guilds.array().sort( function( a, b ){ return b.memberCount - a.memberCount; } ).forEach( async function( guild, intGuildIndex ) {
+      await message.client.guilds.cache.array().sort( function( a, b ){ return b.memberCount - a.memberCount; } ).forEach( async function( guild, intGuildIndex ) {
         var channel, inviteUrl = '';
 //        guild.channels.array().forEach( function ( defaultChannel ) {
 //          if ( !channel && defaultChannel.type === 'text' ) {
@@ -149,7 +149,7 @@ class AboutMe extends commando.Command {
         'Humans: ' + intHumans + ' ( ' + Math.round( ( intHumans / intUsers ) * 100 ) + '% ); ' +
         'Bots: ' + intBots + ' ( ' + Math.round( ( intBots / intUsers ) * 100 ) + '% )\n',
       strCurrentGuildValue += ( message.guild.large ? '\t *User count data for large guilds may be inaccurate.*\n' : '' ),
-      await message.guild.channels.array().forEach( function( channel, intChannelIndex ) {
+      await message.guild.channels.cache.array().forEach( function( channel, intChannelIndex ) {
         if ( channel.type === 'text' ){
           intTextChannels++;
         } else {
@@ -175,14 +175,14 @@ class AboutMe extends commando.Command {
       strCurrentGuildValue += '**Roles: ' + intRoles + '**; ' +
         'My **' + arrMyRoles.length + '** roles: ' + strMyRoles
     ] ).then( () => {
-      var aboutBot = new Discord.RichEmbed()
+      var aboutBot = new Discord.MessageEmbed()
         .setTitle( 'About me, ' + message.client.user.tag )
         .setDescription( strBotType + strDebugServer + strInviteMe + strOwner + strLastRestart )
         .setThumbnail( message.client.user.displayAvatarURL )
         .setColor( message.guild.me.displayHexColor )
         .addField( strGuildsName, strGuildsValue )
         .addField( strCurrentGuildName, strCurrentGuildValue )
-        .addField( 'Total users served:', message.client.users.array().length, true )
+        .addField( 'Total users served:', message.client.users.cache.array().length, true )
         .addField( 'Memory usage:', ( Math.round( ( process.memoryUsage().rss / 1024 / 1024 * 100 ) ) / 100 ) + 'MB', true )
         .setTimestamp()
         .setFooter( '... as requested by ' + message.author.tag + '.', message.author.displayAvatarURL );

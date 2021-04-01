@@ -1,6 +1,6 @@
 const Discord = require( 'discord.js' );
 const Commando = require( 'discord.js-commando' );
-const fs = require( 'fs' );
+const fs = require( 'fs' ).promises;
 const path = require( 'path' );
 const sqlite = require( 'sqlite' );
 const sqlite3 = require( 'sqlite3' );

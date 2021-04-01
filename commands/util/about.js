@@ -2,10 +2,7 @@ const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
 //const settings = require( path.join( __dirname, '../../../settings.json' ) );
-const objTimeString = {
-  year: 'numeric', month: 'long', day: 'numeric',
-  hour: 'numeric', minute: 'numeric', second: 'numeric',
-  timeZone: 'America/New_York', timeZoneName: 'short' };
+const objTimeString = require( '../../time.json' );
 const bot = 'LOTRObot';
 
 class AboutMe extends commando.Command {
@@ -31,10 +28,10 @@ class AboutMe extends commando.Command {
       intUsers = message.guild.memberCount,
       intHumans = 0,
       intBots = 0,
-      intChannels = message.guild.channels.size,
+      intChannels = message.guild.channels.cache.size,
       intTextChannels = 0,
       intVoiceChannels = 0,
-      intRoles = message.guild.roles.size,
+      intRoles = message.guild.roles.cache.size,
       strBotType = '',
       strDebugServer = '',
       strInviteMe = '',
@@ -75,10 +72,9 @@ class AboutMe extends commando.Command {
         ( message.client.user.bot ? ':robot: robot' : ':bust_in_silhouette: human' ) + '.\n',
       strDebugServer = 'You can track changes to the bot in my [debugging server](<https://discord.me/TheShoeStore>).\n',
       strInviteMe = 'You can add me to your own server(s): [Invite Me!](https://discordapp.com/api/oauth2/authorize?client_id=' + message.client.user.id + '&scope=bot&permissions=8)\n',
-      strOwner = 'My owner' + ' is <@' +message.client.owner+ '>.', /*( message.client.owners.length === 1 ? ' is ' : 's are ' ),
-      await message.client.owners.forEach( async function( ownerID, i ){
-        var owner = await message.client.fetchUser( ownerID );
-        strOwner += owner + ' (' + owner.tag + ')';
+      strOwner = 'My owner' + ( message.client.owners.length === 1 ? ' is ' : 's are ' ),
+      await message.client.owners.forEach( async function( owner, i ) {
+        strOwner += '<@' + owner + '> (' + owner.tag + ')';
         if ( message.client.owners.length > 2 && i < message.client.owners.length ) {
           strOwner += ', ';
         } else if ( message.client.owners.length > 2 && i === message.client.owners.length ) {
@@ -87,7 +83,7 @@ class AboutMe extends commando.Command {
           strOwner += ' and ';
         }
       } ),
-      strOwner += '.\n',//*/
+      strOwner += '.\n',
       strLastRestart = 'I\'ve been online ' +
         ( objUptime.weeks !== 0 ? '**' + objUptime.weeks + '**w ' : '' ) +
         ( objUptime.days !== 0 ? '**' + objUptime.days + '**d ' : '' ) +
@@ -95,18 +91,12 @@ class AboutMe extends commando.Command {
         ( objUptime.minutes !== 0 ? '**' + objUptime.minutes + '**m ' : '' ) +
         ( objUptime.seconds !== 0 ? '**' + objUptime.seconds + '**s ' : '' ) +
         ' since:\n\t' + ( new Date( ( new Date( ) ).valueOf() - message.client.uptime ) ).toLocaleDateString( 'en-US', objTimeString ),
-      intGuilds = message.client.guilds.size,
+      intGuilds = message.client.guilds.cache.size,
       intGuildsList = 3,
       intTopIndex = ( intGuilds < intGuildsList ? intGuilds : intGuildsList ),
       strGuildsValue = ' ',
       await message.client.guilds.cache.array().sort( function( a, b ){ return b.memberCount - a.memberCount; } ).forEach( async function( guild, intGuildIndex ) {
         var channel, inviteUrl = '';
-//        guild.channels.array().forEach( function ( defaultChannel ) {
-//          if ( !channel && defaultChannel.type === 'text' ) {
-//            channel = defaultChannel;
-//          }
-//        } );
-//        await channel.createInvite( { maxAge: 0 } ).then( Invite => { inviteUrl = Invite.url; } ).catch( console.error );
         if ( args && arrArgs[ 0 ].toUpperCase() === 'LIST' ) {
           var strThisGuildIndexEmojii = ':';
           if ( intGuildIndex < 10 ) {
@@ -189,9 +179,9 @@ class AboutMe extends commando.Command {
       
       response.edit( { embed: aboutBot } ).catch( function( err ) {
         console.log( response );
-        console.log( 'Attempting to edit an "!about" response failed with error: ' + err );
+        console.log( 'Attempting to edit an "' + client.guilds.cache.get(message.guild.id).commandPrefix + 'about" response failed with error: ' + err );
         message.channel.send( 'Editing last message failed, here\'s your result:', { embed: aboutBot } ).catch(  function( error ) {
-          console.log( 'Attempting to send an "!about" response from edit error failed with error: ' + error );
+          console.log( 'Attempting to send an "' + client.guilds.cache.get(message.guild.id).commandPrefix + 'about" response from edit error failed with error: ' + error );
         } );
       } );
     } );

@@ -3,6 +3,7 @@ const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
 //const settings = require( path.join( __dirname, '../../../settings.json' ) );
 const objTimeString = require( '../../time.json' );
+var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
 const bot = 'LOTRObot';
 
 class AboutMe extends commando.Command {

@@ -1,5 +1,4 @@
 const express = require( 'express' );
-
 const server = express();
 
 server.all( '/', ( req, res ) => {

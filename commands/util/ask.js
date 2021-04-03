@@ -1,8 +1,5 @@
 const commando = require( 'discord.js-commando' );
-const objTimeString = {
-  year: 'numeric', month: 'long', day: 'numeric',
-  hour: 'numeric', minute: 'numeric', second: 'numeric',
-  timeZone: 'America/New_York', timeZoneName: 'short' };
+const objTimeString = require( '../../time.json' );
 var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
 
 class JustAsk extends commando.Command {
@@ -16,7 +13,7 @@ class JustAsk extends commando.Command {
   }
   
   async run( message, args ) {
-    message.delete().catch( errDel => { console.error( '%s: Error attempting to delete message: %o', strNow, errDel ); } );
+    message.delete().catch( errDel => { console.error( '%s: Error attempting to delete message: %o', strNow(), errDel ); } );
     var strMentions = '';
     if ( message.mentions.members.size >= 1 ) {
       var arrMentions = message.mentions.members.array();
@@ -31,10 +28,8 @@ class JustAsk extends commando.Command {
         }
       } );
       strMentions += ', y';
-    } else {
-      strMentions = 'Y';
-    }
-    return message.channel.send( strMentions + 'ou\'re much more likely to get an answer to your question if you ask it.' );
+    } else { strMentions = 'Y'; }
+    message.channel.send( strMentions + 'ou\'re much more likely to get an answer to your question if you ask it.' );
   }  
 }
 

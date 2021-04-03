@@ -1,9 +1,6 @@
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
-const objTimeString = {
-  year: 'numeric', month: 'long', day: 'numeric',
-  hour: 'numeric', minute: 'numeric', second: 'numeric',
-  timeZone: 'America/New_York', timeZoneName: 'short' };
+const objTimeString = require( '../../time.json' );
 var strNow = ( new Date() ).toLocaleDateString( 'en-US', objTimeString );
 
 class Dver extends commando.Command {

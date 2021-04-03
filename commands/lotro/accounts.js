@@ -1,10 +1,7 @@
 const Discord = require( 'discord.js' );
 const commando = require( 'discord.js-commando' );
 const path = require( 'path' );
-const objTimeString = {
-  year: 'numeric', month: 'long', day: 'numeric',
-  hour: 'numeric', minute: 'numeric', second: 'numeric',
-  timeZone: 'America/New_York', timeZoneName: 'short' };
+const objTimeString = require( '../../time.json' );
 const strScreenShotPath = path.join( __dirname, '../../images-lotro/' );
 
 class AccountCompare extends commando.Command {
